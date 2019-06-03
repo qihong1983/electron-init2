@@ -1,0 +1,150 @@
+.App {
+  text-align: center;
+}
+
+body {
+  background: #f2f2f2!important;
+}
+.logo {
+  height:50px;
+  background: url(http://alemall-prod.oss-cn-beijing.aliyuncs.com/1ae1e4d22663f63d32524a58f2d9e123.png) no-repeat center center;
+  width:163px;
+  background-size: 95px 42px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+webview {
+  display:inline-flex;
+  width:1640px;
+  height:1480px;
+}
+webview.hide {
+  visibility: collapse
+}
+
+.ant-layout-header {
+  background: #1a1a1a;
+  padding:0!important;
+}
+
+.ant-layout-content {
+  background: #f2f2f2;
+  margin-bottom:69px;
+}
+
+
+.region-card {
+  background:#f2f2f2!important;
+}
+
+.region-card .ant-card-head {
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.sketch-picker {
+  margin-top:16px;
+}
+
+/*.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}*/
+
+.itemCard .ant-avatar {
+  margin-right: auto !important;
+  margin: 0 auto;
+  margin-top:16px;
+}
+
+.itemCard .ant-card-meta-title {
+  text-align: center;
+}
+
+.itemCard .ant-card-meta-description {
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.itemCard .ant-card-bordered {
+  border:1px solid #e5e5e5 !important;
+}
+
+.ava {
+  cursor: pointer;
+  margin:0 auto;
+}
+
+.smallCardClose  {
+  cursor: pointer;
+}
+
+.ant-layout-footer {
+  background:#e5e5e5 !important;
+  position: fixed;
+  bottom:0px;
+  width:100%;
+}
+
+.ant-btn-primary {
+  background:#e56045 !important;
+  border-color: #e56045 !important;
+}
+
+.ant-btn-primary:hover, .ant-btn-primary:focus {
+  color:#fff!important;
+}
+
+.ant-input:focus{
+  border-color: #e56045!important;
+}
+
+.ant-input {
+  border:1px solid #e5e5e5;
+}
+
+.ant-input:hover{
+  border-color:#e56045 !important;
+  box-shadow: 0 0 0px rgba(229,96,69,0.2) !important;
+}
+
+.ant-btn:hover, ant-btn:focus {
+  border-color:#e56045 !important;
+  /* color:#e56045!important; */
+}
+.select-color-button:active{
+  color:#e56045 !important;
+}
+html .select-color-button:hover,  .select-color-button:focus{
+  color:#e56045!important;
+}
+
+.ant-btn {
+  border-color: #e5e5e5!important;
+}
+
+/* .ant-btn:hover, .ant-btn:focus {
+  color:#999!important;
+} */
+
+
+.addressModal .ant-btn:hover, .addressModal .ant-btn:focus{
+  color:#e56045;
+}
+
+.addressModal .ant-btn-parimary:hover, .addressModal .ant-btn-parimary:focus{
+  color:#fff!important;
+}
+
+.removeAllAddress:hover, .removeAllAddress:focus {
+  border:1px solid #e56045!important;
+  color: #e56045!important;
+}

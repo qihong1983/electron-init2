@@ -1,0 +1,77 @@
+{
+  "name": "heqi_pc_client91",
+  "version": "1.0.35",
+  "private": true,
+  "dependencies": {
+    "asar": "~0.14.5",
+    "concurrently": "~4.0.1",
+    "electron-is-dev": "~1.0.1",
+    "electron-log": "~3.0.6",
+    "fsevents": "~2.0.7",
+    "lodash": "~4.17.11",
+    "nedb": "~1.8.0",
+    "react-color": "~2.17.3",
+    "taffy": "~2.6.2",
+    "uuid": "~3.3.2",
+    "electron-updater": "4.0.0",
+    "wait-on": "~3.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "postinstall": "install-app-deps",
+    "dist": "build --div",
+    "dmg": "electron-builder",
+    "winpack": "electron-packager . myapp --overwrite --win=x32 --out ./HelloWorldApp --arch=x64 --app-version=1.0.0 --electron-version=5.0.2",
+    "asar": "asar pack MyApp-darwin-x64/MyApp.app/Contents/Resources/app MyApp-darwin-x64/MyApp.app/Contents/Resources/app.asar",
+    "electron-dev": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000 && electron . \"",
+    "electron-start": "concurrently \"electron .\"",
+    "pack": "electron-packager . MyApp --ignore=node_modules/electorn-* --app-version=1.0.0 --electron-version=5.0.2 && cp -rvf Icon.icns MyApp-darwin-x64/MyApp.app/Contents/Resources/electron.icns",
+    "electron-fe": "concurrently \"BROWSER=none npm run start\" \"wait-on http://localhost:3000\""
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "main": "public/electron.js",
+  "homepage": ".",
+  "devDependencies": {
+    "antd": "~3.10.0",
+    "cross-env": "~5.1.3",
+    "electron": "~5.0.2",
+    "electron-builder": "~20.41.0",
+    "electron-packager": "~12.2.0",
+    "electron-squirrel-startup": "~1.0.0",
+    "electron-winstaller": "~2.7.0",
+    "loadash": "~1.0.0",
+    "moment": "~2.22.2",
+    "react": "~15.6.1",
+    "react-dom": "~15.5.3",
+    "react-electron-web-view": "~2.0.1",
+    "react-redux": "~5.0.3",
+    "react-router": "~3.0.0",
+    "react-router-redux": "~4.0.8",
+    "react-scripts": "2.0.4",
+    "redux": "~3.6.0",
+    "redux-thunk": "~2.2.0"
+  },
+  "build": {
+    "productName": "xingsanhao",
+    "appId": "Mac Developer: 55377146@qq.com (8S22CQ8UK8)",
+    "asar": true,
+    "readonly": false,
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://127.0.0.1:8888/"
+      }
+    ]
+  }
+}

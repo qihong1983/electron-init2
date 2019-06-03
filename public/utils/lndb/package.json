@@ -1,0 +1,59 @@
+{
+  "_args": [
+    [
+      "lndb@0.0.3",
+      "/Users/qihong/heqi/demo/goods_erp"
+    ]
+  ],
+  "_from": "lndb@0.0.3",
+  "_id": "lndb@0.0.3",
+  "_inBundle": false,
+  "_integrity": "sha512-sHrIXQT1QocKqmhGm66i/NvSYjUYn+gwPI8DCjxBxBl+WTAqkInu/qyeJxkVKok8Fvvn4O9j754RZA0qsrjqDQ==",
+  "_location": "/lndb",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "lndb@0.0.3",
+    "name": "lndb",
+    "escapedName": "lndb",
+    "rawSpec": "0.0.3",
+    "saveSpec": null,
+    "fetchSpec": "0.0.3"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/lndb/-/lndb-0.0.3.tgz",
+  "_spec": "0.0.3",
+  "_where": "/Users/qihong/heqi/demo/goods_erp",
+  "author": {
+    "name": "leiyswork@gmail.com"
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.11",
+    "arraybuffer-to-buffer": "0.0.4",
+    "blob-to-buffer": "^1.2.8",
+    "graceful-fs": "^4.1.11",
+    "is-array-buffer": "^1.0.1",
+    "is-blob": "^1.0.0",
+    "isutf8": "^2.0.2",
+    "lodash": "^4.17.10",
+    "steno": "^0.4.4",
+    "tempfile": "^2.0.0",
+    "webpack": "^4.16.5"
+  },
+  "description": "A file database for electron",
+  "keywords": [
+    "electron",
+    "database",
+    "db"
+  ],
+  "license": "MIT",
+  "main": "src/main.js",
+  "name": "lndb",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.3"
+}
