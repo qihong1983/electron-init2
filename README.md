@@ -62,7 +62,7 @@
 
 |生产环境需要注册apple开发者帐号|
 |---|
-|electron-osx-sign /Applications/xingsanhao.app --identity 'Mac Developer: 55377146@qq.com(8S22CQ8UK8)'|
+|electron-osx-sign /Applications/xingsanhao.app --identity '```Mac Developer: xxxxxx@xxx.com(xxxxxxxxx)```'|
 
 
 
