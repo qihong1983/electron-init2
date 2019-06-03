@@ -24,19 +24,20 @@
 
 ## 运行
     
-| 命令|  |  说明 |
+| 命令|   说明 |
 | npm start  | 运行前端脚本 |
 
 ### 本地开发 
 
 | 命令|  |  说明 |
-| -- |  |  --  |
+| -- | -- |  --  |
 | npm start  | 运行前端脚本 |
 | npm run electron-start | 运行客户端 | 
 
 ### 线上
 
 | 命令 | 说明|
+| -- |-- |
 | npm run build | 代码压缩 |
 | electron-builder | 打包 |
 | 把dist里的内容全部copy 到 http服务器|  用来做软件更新 |
@@ -44,6 +45,7 @@
 ## osx
 
 | 库|  说明|
+| -- | -- |
 |  electron-osx-sign| 全局安装 |
 
 ### 运行
