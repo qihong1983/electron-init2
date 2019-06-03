@@ -2,9 +2,10 @@
 
 ## 脚首架地址
 
-```
-    http://git.heqi.io/qihong/electron-init
-```
+|地址|
+|---|
+|http://git.heqi.io/qihong/electron-init|
+
    
 
 ## 环境
