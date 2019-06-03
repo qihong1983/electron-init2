@@ -58,3 +58,4 @@ electron-osx-sign /Applications/xingsanhao.app --identity 'Mac Developer: 553771
 ```
 
 
+
