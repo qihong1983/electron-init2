@@ -1,5 +1,11 @@
 # PC桌面客户端脚手架 -- electron
 
+## 脚首架地址
+
+```
+    http://git.heqi.io/qihong/electron-init
+```
+   
 
 ## 环境
 
@@ -11,11 +17,6 @@
 |npm|v6.4.1|
 
 
-
-|类型|举例|
-|---|---|
-|编译型语言|C<br>C++|
-|解释型语言|Python|
 
 
 
