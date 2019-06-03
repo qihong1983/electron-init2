@@ -1,10 +1,5 @@
 # PC桌面客户端脚手架 -- electron
 
-## 脚首架地址
-
-|地址|
-|---|
-|http://git.heqi.io/qihong/electron-init|
 
    
 
@@ -42,7 +37,7 @@
 ### 本地开发 
 
 | 命令|  |  说明 |
-| --- | --- |  ---  |
+| --- |  ---  |
 | npm start  | 运行前端脚本 |
 | npm run electron-start | 运行客户端 | 
 
