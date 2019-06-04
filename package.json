@@ -1,6 +1,6 @@
 {
   "name": "heqi_pc_client91",
-  "version": "1.0.35",
+  "version": "1.0.83",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -63,7 +63,7 @@
     "redux-thunk": "~2.2.0"
   },
   "build": {
-    "productName": "xingsanhao",
+    "productName": "heqi",
     "appId": "Mac Developer: 55377146@qq.com (8S22CQ8UK8)",
     "asar": true,
     "readonly": false,

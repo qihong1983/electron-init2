@@ -14,6 +14,10 @@ body {
   vertical-align: middle;
 }
 
+.ant-btn:hover, .ant-btn:focus{
+  color:#e56045!important;
+}
+
 webview {
   display:inline-flex;
   width:1640px;
@@ -147,4 +151,8 @@ html .select-color-button:hover,  .select-color-button:focus{
 .removeAllAddress:hover, .removeAllAddress:focus {
   border:1px solid #e56045!important;
   color: #e56045!important;
+}
+
+.left {
+  float:left;
 }

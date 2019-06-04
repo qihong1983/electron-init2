@@ -10,6 +10,7 @@ import {
 } from 'react-router';
 
 
+import moment from 'moment';
 
 
 import {
@@ -43,7 +44,8 @@ import {
   Input,
   Row,
   Col,
-  List
+  List,
+  Progress
 } from 'antd';
 
 const {
@@ -51,6 +53,11 @@ const {
   Content,
   Footer
 } = Layout;
+
+
+//确认弹出
+
+const confirm = Modal.confirm;
 
 const { Meta } = Card;
 
@@ -83,7 +90,12 @@ class App extends Component {
       buttonChangeColorLogo: false,
       items: [],
       editObj: null,
-      url: null
+      url: null,
+      version: '',
+      sendVersionTime: '',
+      newVersion: false,
+      percent: 0,
+      resetUpdate: false
     }
   }
 
@@ -97,6 +109,20 @@ class App extends Component {
     //发送数据 
     ipcRenderer.send('app-getData');
 
+    //接收版本和时间
+    ipcRenderer.on('app-getVersionTime', (event, arg, arg2) => {
+      console.log(arg, 'arg');
+
+      console.log(arg2, 'arg2');
+
+      this.setState({
+        version: arg,
+        sendVersionTime: arg2
+      });
+    });
+
+
+
     //接收数据
     ipcRenderer.on('app-sendData', (event, arg, arg2) => {
       this.setState({
@@ -106,11 +132,56 @@ class App extends Component {
     });
 
 
+    //发现新版本
+    ipcRenderer.on('app-getNewVersion', (event, arg) => {
+
+      console.log('检测到新版本了吗');
+      console.log(arg, '****');
+
+
+
+      this.setState({
+        newVersion: arg
+      });
+    });
+
+
+    //下载进度条
+    ipcRenderer.on('app-downloadProgress', (event, arg) => {
+
+      if (arg.percent >= 100) {
+        confirm({
+          title: '已更新到最新版本，是否重启启动？',
+          content: '如果重新启动，您将使用最新版本',
+          okText: '是',
+          cancelText: '否',
+          onOk() {
+            ipcRenderer.send('isUpdateNow');
+          },
+          onCancel() { },
+        });
+
+
+        this.setState({
+          percent: parseInt(arg.percent, 10),
+          newVersion: false,
+          resetUpdate: true
+        })
+      } else {
+        this.setState({
+          percent: parseInt(arg.percent, 10)
+        })
+      }
+
+
+    });
+
     this.initMenu();
     this.contextmenuInit();
-
-
   }
+
+
+
 
   clickHandle = (img) => {
 
@@ -378,7 +449,9 @@ class App extends Component {
 
 
 
-
+  resetUpdateBtn() {
+    ipcRenderer.send('isUpdateNow');
+  }
 
   render() {
 
@@ -391,15 +464,16 @@ class App extends Component {
           <div className="logo" />
         </Header>
         <Content>
-          <Card className="region-card" title="地址列表999" extra={<div><Button type="primary" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
+
+
+          <Card className="region-card" title="地址列表" extra={<div><Button type="primary" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
             添加地址
           </Button>
             <Divider type="vertical" style={{ height: '39px' }} />
             <Button className="removeAllAddress" onClick={this.removeAllAddress.bind(this)} size={'large'} >
               清空地址
-        </Button>
+            </Button>
           </div>}>
-
             <List
               grid={{
                 gutter: 16,
@@ -546,8 +620,29 @@ class App extends Component {
           </Modal>
         </Content>
         <Footer>
-          footer
-          </Footer>
+          <div>
+
+            {this.state.newVersion ? (
+              <div className="clearfix">
+                <div className="left">检测到新版本，正在下载,请稍后:</div>
+                <div className="left" style={{ width: "100px" }}>
+                  <Progress percent={this.state.percent ? this.state.percent : 0} strokeColor={'#e56045'} status="active" />
+                </div>
+              </div>
+            ) : this.state.resetUpdate ? (
+              <button type="primary" onClick={this.resetUpdateBtn.bind(this)}>重启</button>
+            ) : (
+                  <span>
+                    当前版本:{this.state.version}
+                    发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''}
+                  </span>
+                )
+            }
+
+
+
+          </div>
+        </Footer>
       </Layout>
     );
   }
