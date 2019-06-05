@@ -149,17 +149,18 @@ class App extends Component {
     //下载进度条
     ipcRenderer.on('app-downloadProgress', (event, arg) => {
 
+      console.log(arg, 'argargarg');
       if (arg.percent >= 100) {
-        confirm({
-          title: '已更新到最新版本，是否重启启动？',
-          content: '如果重新启动，您将使用最新版本',
-          okText: '是',
-          cancelText: '否',
-          onOk() {
-            ipcRenderer.send('isUpdateNow');
-          },
-          onCancel() { },
-        });
+        // confirm({
+        //   title: '已更新到最新版本，是否重启启动？',
+        //   content: '如果重新启动，您将使用最新版本',
+        //   okText: '是',
+        //   cancelText: '否',
+        //   onOk() {
+        //     ipcRenderer.send('isUpdateNow');
+        //   },
+        //   onCancel() { },
+        // });
 
 
         this.setState({
@@ -175,6 +176,38 @@ class App extends Component {
 
 
     });
+
+    //下载完成
+
+
+    ipcRenderer.on('app-updateDownload', (event, arg) => {
+
+
+      console.log('下载完成了出现这个');
+
+      confirm({
+        title: '已更新到最新版本，是否重启启动？',
+        content: '如果重新启动，您将使用最新版本',
+        okText: '是',
+        cancelText: '否',
+        onOk() {
+          ipcRenderer.send('isUpdateNow');
+        },
+        onCancel() { },
+      });
+
+
+      this.setState({
+        percent: 100,
+        newVersion: false,
+        resetUpdate: true
+      })
+
+
+
+    });
+
+    // app-updateDownload'
 
     this.initMenu();
     this.contextmenuInit();
@@ -193,36 +226,37 @@ class App extends Component {
   initMenu = () => {
 
 
-    const menu = EMenu.buildFromTemplate([{
-      label: "File",
-      submenu: [{
-        label: "New Window"
-      }, {
-        label: "Settings",
-        accelerator: "CmdOrCtrl+,",
-        click: () => {
+    // const menu = EMenu.buildFromTemplate([{
+    //   label: "File",
+    //   submenu: [{
+    //     label: "New Window"
+    //   }, {
+    //     label: "Settings",
+    //     accelerator: "CmdOrCtrl+,",
+    //     click: () => {
 
 
-          ipcRenderer.send("toggle-settings");
-        }
-      }, {
-        type: "separator"
-      }, {
-        label: "Quit",
-        accelerator: "CmdOrCtrl+Q"
-      }]
-    }, {
-      label: "Edit",
-      submenu: [{
-        label: "Menu Item 1"
-      }, {
-        label: "Menu Item 2"
-      }, {
-        label: "Menu Item 3"
-      }]
-    }]);
-    console.log(EMenu);
-    EMenu.setApplicationMenu(menu);
+    //       ipcRenderer.send("toggle-settings");
+    //     }
+    //   }, {
+    //     type: "separator"
+    //   }, {
+    //     label: "Quit",
+    //     accelerator: "CmdOrCtrl+Q"
+    //   }]
+    // }, {
+    //   label: "Edit",
+    //   submenu: [{
+    //     label: "Menu Item 1"
+    //   }, {
+    //     label: "Menu Item 2"
+    //   }, {
+    //     label: "Menu Item 3"
+    //   }]
+    // }]);
+    // console.log(EMenu);
+    EMenu.setApplicationMenu(null);
+    // EMenu.setApplicationMenu(menu);
 
   }
 
@@ -269,9 +303,9 @@ class App extends Component {
 
     window.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      menu.popup({
-        window: remote.getCurrentWindow()
-      })
+      // menu.popup({
+      //   window: remote.getCurrentWindow()
+      // })
     }, false)
   }
 
@@ -332,11 +366,11 @@ class App extends Component {
   handleSubmit = e => {
     // e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      console.log(values, 'values');
-      console.log(err, 'errerr');
 
       //添加地址
-      if (values.title && values.address) {
+      if (values.title && values.address && !err.address) {
+
+
         this.setState({
           addAddressVisible: false
         });
@@ -359,8 +393,7 @@ class App extends Component {
 
 
       //修改地址
-      if (values.titleEdit && values.addressEdit) {
-        console.log('触发修改 ');
+      if (values.titleEdit && values.addressEdit && !err.addressEdit) {
 
         this.setState({
           editAddAddressVisible: false
@@ -445,6 +478,8 @@ class App extends Component {
     this.setState({
       editAddAddressVisible: false
     });
+
+    this.props.form.resetFields();
   }
 
 
@@ -506,7 +541,7 @@ class App extends Component {
             onOk={this.editAddressOk.bind(this)}
             onCancel={this.editAddressCancel.bind(this)}
             okText="确认修改"
-            cancelText="修改添加"
+            cancelText="取消修改"
           >
             <Form onSubmit={this.handleSubmit} ref="editAddAddress" className="login-form" layout={"horizontal"}>
               <Form.Item label="标题">
@@ -529,14 +564,14 @@ class App extends Component {
                     message: '地址不能为空'
                   }, {
 
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
+                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
                     message: '请正确输入地址,开头必需https|http'
 
                   }]
 
                 })(
                   <Input
-                    placeholder="http://demo1.heiqiauto.com"
+                    placeholder="http://demo1.heqiauto.com"
                   />,
                 )}
               </Form.Item>
@@ -589,11 +624,10 @@ class App extends Component {
                     message: '地址不能为空'
                   }, {
 
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https|http'
+                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
+                    message: '请正确输入地址,开头必需https://|http://'
 
                   }]
-
                 })(
                   <Input
                     placeholder="http://demo1.heiqiauto.com"
@@ -634,7 +668,7 @@ class App extends Component {
             ) : (
                   <span>
                     当前版本:{this.state.version}
-                    发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''}
+                    (发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
                   </span>
                 )
             }

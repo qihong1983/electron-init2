@@ -1,6 +1,6 @@
 {
-  "name": "heqi_pc_client91",
-  "version": "1.0.84",
+  "name": "heqi",
+  "version": "1.0.103",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -70,8 +70,20 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://127.0.0.1:8888/"
+        "url": "http://heqiset.heqiauto.com"
       }
-    ]
+    ],
+    "win": {
+      "icon": "./icon.ico",
+      "artifactName": "${productName}_setup_${version}.${ext}",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
