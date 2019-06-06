@@ -71,6 +71,56 @@ const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
 
+// var desktopCapturer = window.electron.desktopCapturer;
+
+
+// desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async sources => {
+//   for (const source of sources) {
+
+//     console.log(sources, 'sources');
+//     if (source.name === 'Screen 1') {
+//       try {
+//         const stream = await navigator.mediaDevices.getUserMedia({
+//           audio: false,
+//           video: {
+//             mandatory: {
+//               chromeMediaSource: 'desktop',
+//               chromeMediaSourceId: source.id,
+//               minWidth: 1280,
+//               maxWidth: 1280,
+//               minHeight: 720,
+//               maxHeight: 720
+//             }
+//           }
+//         })
+//         handleStream(stream)
+//       } catch (e) {
+//         handleError(e)
+//       }
+//       return
+//     }
+//   }
+// })
+
+// function handleStream(stream) {
+//   console.log(stream, 'stream');
+//   const video = document.querySelector('video');
+//   video.srcObject = stream;
+//   video.onloadedmetadata = (e) => video.play();
+
+
+// }
+
+// function handleError(e) {
+//   console.log(e)
+// }
+
+
+// var barScan = new plus.barcode.Barcode("scanContainer");
+
+// console.log(barScan, 'barScan');
+
+
 //uuid
 const uuidv1 = require('uuid/v1');
 

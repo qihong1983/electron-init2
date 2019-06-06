@@ -19,8 +19,9 @@ const Config = require('./config');
 
 const _ = require(`lodash`);
 
-// const EMenu = electron.remote.Menu;
-// EMenu.setApplicationMenu(null);
+const Menu = electron.Menu;
+/*隐藏electron创听的菜单栏*/
+Menu.setApplicationMenu(null);
 
 /**
  * 数据库配置
@@ -57,6 +58,8 @@ function createWindow() {
   if (isDev) {
     mainWindow.webContents.openDevTools();
   }
+
+
 
 
   mainWindow.on('closed', () => {
