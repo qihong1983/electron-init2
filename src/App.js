@@ -29,7 +29,7 @@ import * as actionCreators from './actions/userList/list';
 
 import _ from 'lodash';
 
-
+import QrcodeDecoder from 'qrcode-decoder';
 import {
   Layout,
   Menu,
@@ -71,54 +71,107 @@ const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
 
-// var desktopCapturer = window.electron.desktopCapturer;
+const path = require('path');
+
+var fs = require("fs")
+
+const app = window.electron.app;
+
+const os = require('os');
+
+var desktopCapturer = window.electron.desktopCapturer;
+
+const electronScreen = window.electron.screen;
 
 
-// desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async sources => {
-//   for (const source of sources) {
-
-//     console.log(sources, 'sources');
-//     if (source.name === 'Screen 1') {
-//       try {
-//         const stream = await navigator.mediaDevices.getUserMedia({
-//           audio: false,
-//           video: {
-//             mandatory: {
-//               chromeMediaSource: 'desktop',
-//               chromeMediaSourceId: source.id,
-//               minWidth: 1280,
-//               maxWidth: 1280,
-//               minHeight: 720,
-//               maxHeight: 720
-//             }
-//           }
-//         })
-//         handleStream(stream)
-//       } catch (e) {
-//         handleError(e)
-//       }
-//       return
-//     }
-//   }
-// })
-
-// function handleStream(stream) {
-//   console.log(stream, 'stream');
-//   const video = document.querySelector('video');
-//   video.srcObject = stream;
-//   video.onloadedmetadata = (e) => video.play();
 
 
-// }
+function determineScreenShotSize () {
+    const screenSize = electronScreen.getPrimaryDisplay().workAreaSize
+    const maxDimension = Math.max(screenSize.width, screenSize.height)
+    return {
+      width: maxDimension * window.devicePixelRatio,
+      height: maxDimension * window.devicePixelRatio
+    }
+  }
 
-// function handleError(e) {
-//   console.log(e)
-// }
+const thumbSize = determineScreenShotSize();
+desktopCapturer.getSources({ types: ['window', 'screen'],thumbnailSize: thumbSize }).then(async sources => {
+  for (const source of sources) {
+
+    console.log(sources, 'sources');
+
+    if (source.name === 'Screen 1') {
+
+      console.log(os);
+      const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
+      console.log(os.tmpdir(), 'os.tmpdir()');
+      console.log(fs);
+
+      console.log(source.thumbnail, '*****####***');
+      console.log(source.thumbnail.toPNG(), '*****####***');
+
+      ipcRenderer.send('qrcodeImg',source.thumbnail.toPNG());
+      
 
 
-// var barScan = new plus.barcode.Barcode("scanContainer");
+      // try {
+      //   const stream = await navigator.mediaDevices.getUserMedia({
+      //     audio: false,
+      //     video: {
+      //       mandatory: {
+      //         chromeMediaSource: 'desktop',
+      //         chromeMediaSourceId: source.id,
+      //         minWidth: 1280,
+      //         maxWidth: 1280,
+      //         minHeight: 720,
+      //         maxHeight: 720
+      //       }
+      //     }
+      //   })
+      //   handleStream(stream)
+      // } catch (e) {
+      //   handleError(e)
+      // }
+      return
+    }
+  }
+});
 
-// console.log(barScan, 'barScan');
+
+//接收图片
+ipcRenderer.on('app-getImg', (event, arg) => {
+
+  console.log(arg, 'argarg');
+  // var qr = new QrcodeDecoder();
+  // qr.decodeFromImage("http://i6.hexunimg.cn/2014-01-15/161426168.jpg").then((res) => {
+  //   console.log(res, '为什么');
+  // });
+
+  var qr = new QrcodeDecoder();
+  qr.decodeFromImage(arg).then((res) => {
+    console.log(res);
+  });
+});
+
+function handleStream(stream) {
+  console.log(stream, 'stream');
+  const video = document.querySelector('video');
+  video.srcObject = stream;
+
+  console.log(video.srcObject);
+
+  video.onloadedmetadata = (e) => video.play();
+
+
+}
+
+function handleError(e) {
+  console.log(e)
+}
+
+
+
 
 
 //uuid
@@ -150,6 +203,8 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+
 
 
     //检测更新 

@@ -22,6 +22,12 @@ const _ = require(`lodash`);
 const Menu = electron.Menu;
 /*隐藏electron创听的菜单栏*/
 Menu.setApplicationMenu(null);
+const os = require('os');
+
+var Jimp = require("jimp");
+
+
+var QrCode = require('qrcode-reader');
 
 /**
  * 数据库配置
@@ -180,6 +186,42 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+//接收图片
+
+ipcMain.on('qrcodeImg', (event, args) => {
+
+  // fs.writeFileSync(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
+    fs.writeFile(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
+
+        console.log(path.join(os.tmpdir(), 'screenshot.png'), '*****');
+                  if (error) return console.log(error)
+
+        var buffer = fs.readFileSync(path.join(os.tmpdir(), 'screenshot.png'));
+        Jimp.read(buffer, function (err, image) {
+          if (err) {
+            console.error(err);
+            // TODO handle error
+          }
+          var qr = new QrCode();
+          qr.callback = function (err, value) {
+            if (err) {
+              console.error(err);
+              // TODO handle error
+            }
+            console.log(value.result);
+            console.log(value);
+          };
+          qr.decode(image.bitmap);
+        });
+
+
+        mainWindow.webContents.send('app-getImg', path.join(os.tmpdir(), 'screenshot.png'));
+
+                })
+});
+
+// qrcodeImg
 
 // 打开web窗口
 ipcMain.on('webSiteData', (event, webSiteData) => {
