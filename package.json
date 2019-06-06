@@ -1,6 +1,6 @@
 {
   "name": "heqi",
-  "version": "1.0.107",
+  "version": "1.0.110",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -75,17 +75,7 @@
     ],
     "win": {
       "icon": "./icon.ico",
-      "artifactName": "${productName}_setup_${version}.${ext}",
-      "target": [
-        "nsis"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "warningsAsErrors": false,
-      "perMachine": true,
-      "unicode": false,
-      "allowToChangeInstallationDirectory": true
+      "artifactName": "${productName}_setup_${version}.${ext}"
     }
   }
 }

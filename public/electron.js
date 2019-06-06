@@ -54,9 +54,9 @@ function createWindow() {
   webSiteWindow.loadURL(isDev ? 'http://localhost:3000/#/website' : `file://${path.join(__dirname, '../build/index.html#website')}`);
 
   //调试
-  // if (isDev) {
-  mainWindow.webContents.openDevTools();
-  // }
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+  }
 
 
   mainWindow.on('closed', () => {
