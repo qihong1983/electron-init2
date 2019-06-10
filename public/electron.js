@@ -19,6 +19,15 @@ const Config = require('./config');
 
 const _ = require(`lodash`);
 
+const Menu = electron.Menu;
+/*隐藏electron创听的菜单栏*/
+Menu.setApplicationMenu(null);
+const os = require('os');
+
+var Jimp = require("jimp");
+
+
+var QrCode = require('qrcode-reader');
 
 /**
  * 数据库配置
@@ -49,10 +58,15 @@ function createWindow() {
 
   //判断是打包前还是打包后 
   mainWindow.loadURL(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`);
-  webSiteWindow.loadURL(isDev ? 'http://localhost:3000/#/website' : `file://${path.join(__dirname, '../build/index.html#/website')}`);
+  webSiteWindow.loadURL(isDev ? 'http://localhost:3000/#/website' : `file://${path.join(__dirname, '../build/index.html#website')}`);
 
   //调试
-  // mainWindow.webContents.openDevTools();
+  if (isDev) {
+    mainWindow.webContents.openDevTools();
+  }
+
+
+
 
   mainWindow.on('closed', () => {
     // mainWindow = null
@@ -83,15 +97,14 @@ function createWindow() {
     });
 
     //检查中
-    autoUpdater.on('checking-for-update', function (info) {
-      console.log(info, '#################');
-      console.log('检查中');
+    autoUpdater.on('checking-for-update', function () {
+      // console.log('检查中');
       // sendUpdateMessage(returnData.checking)
     });
 
     //发现新版本
     autoUpdater.on('update-available', function (info) {
-      console.log('发现新版本');
+      // console.log('发现新版本');
       // sendUpdateMessage(returnData.updateAva)
 
       setTimeout(function () {
@@ -101,9 +114,9 @@ function createWindow() {
 
     //当前版本为最新版本
     autoUpdater.on('update-not-available', function (info) {
-      console.log(info, '没有发现新版本');
+      console.log(info, 'not verionversion');
       setTimeout(function () {
-        console.log('当前版本为最新版本');
+        console.log('setTimeout versionversion');
         // sendUpdateMessage(returnData.updateNotAva)
 
         mainWindow.webContents.send('app-getVersionTime', info.version, info.releaseDate)
@@ -112,16 +125,24 @@ function createWindow() {
 
     // 更新下载进度事件
     autoUpdater.on('download-progress', function (progressObj) {
-      console.log(progressObj, '进度');
+      // console.log(progressObj, '进度');
 
-      setTimeout(function () {
-        mainWindow.webContents.send('app-downloadProgress', progressObj)
-      }, 500)
+      console.log(progressObj, '******');
+      // setTimeout(function () {
+      mainWindow.webContents.send('app-downloadProgress', progressObj)
+      // }, 500)
 
     });
 
 
     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+
+      console.log('##############');
+      mainWindow.webContents.send('app-updateDownload', true);
+
+
+
+
       ipcMain.on('isUpdateNow', (e, arg) => {
         //some code here to handle event
         autoUpdater.quitAndInstall();
@@ -165,6 +186,42 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+//接收图片
+console.log('123123123')
+ipcMain.on('qrcodeImg', (event, args) => {
+  console.log('***************')
+  // fs.writeFileSync(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
+    fs.writeFile(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
+
+        console.log(path.join(os.tmpdir(), 'screenshot.png'), '*****');
+                  if (error) return console.log(error)
+
+        var buffer = fs.readFileSync(path.join(os.tmpdir(), 'screenshot.png'));
+        Jimp.read(buffer, function (err, image) {
+          if (err) {
+            console.error(err);
+            // TODO handle error
+          }
+          var qr = new QrCode();
+          qr.callback = function (err, value) {
+            if (err) {
+              console.error(err);
+              // TODO handle error
+            }
+            // console.log(value.result);
+            console.log(value, '#######');
+          };
+          qr.decode(image.bitmap);
+        });
+
+
+        mainWindow.webContents.send('app-getImg', path.join(os.tmpdir(), 'screenshot.png'));
+
+                })
+});
+
+// qrcodeImg
 
 // 打开web窗口
 ipcMain.on('webSiteData', (event, webSiteData) => {

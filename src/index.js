@@ -26,7 +26,6 @@ import {
 } from 'redux';
 
 import {
-	connect,
 	Provider
 } from 'react-redux';
 

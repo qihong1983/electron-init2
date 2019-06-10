@@ -29,7 +29,7 @@ import * as actionCreators from './actions/userList/list';
 
 import _ from 'lodash';
 
-
+import QrcodeDecoder from 'qrcode-decoder';
 import {
   Layout,
   Menu,
@@ -71,6 +71,109 @@ const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
 
+const path = require('path');
+
+var fs = require("fs")
+
+const app = window.electron.app;
+
+const os = require('os');
+
+var desktopCapturer = window.electron.desktopCapturer;
+
+const electronScreen = window.electron.screen;
+
+
+
+
+function determineScreenShotSize () {
+    const screenSize = electronScreen.getPrimaryDisplay().workAreaSize
+    const maxDimension = Math.max(screenSize.width, screenSize.height)
+    return {
+      width: maxDimension * window.devicePixelRatio,
+      height: maxDimension * window.devicePixelRatio
+    }
+  }
+
+const thumbSize = determineScreenShotSize();
+desktopCapturer.getSources({ types: ['window', 'screen'],thumbnailSize: thumbSize }).then(async sources => {
+  for (const source of sources) {
+
+    console.log(sources, 'sources');
+
+    if (source.name === 'Entire screen') {
+
+      console.log(os);
+      const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
+      console.log(os.tmpdir(), 'os.tmpdir()');
+      console.log(fs);
+
+      console.log(source.thumbnail, '*****####***');
+      console.log(source.thumbnail.toPNG(), '*****####***');
+
+      ipcRenderer.send('qrcodeImg',source.thumbnail.toPNG());
+      
+
+
+      // try {
+      //   const stream = await navigator.mediaDevices.getUserMedia({
+      //     audio: false,
+      //     video: {
+      //       mandatory: {
+      //         chromeMediaSource: 'desktop',
+      //         chromeMediaSourceId: source.id,
+      //         minWidth: 1280,
+      //         maxWidth: 1280,
+      //         minHeight: 720,
+      //         maxHeight: 720
+      //       }
+      //     }
+      //   })
+      //   handleStream(stream)
+      // } catch (e) {
+      //   handleError(e)
+      // }
+      return
+    }
+  }
+});
+
+
+//接收图片
+ipcRenderer.on('app-getImg', (event, arg) => {
+
+  console.log(arg, 'argarg');
+  // var qr = new QrcodeDecoder();
+  // qr.decodeFromImage("http://i6.hexunimg.cn/2014-01-15/161426168.jpg").then((res) => {
+  //   console.log(res, '为什么');
+  // });
+
+  var qr = new QrcodeDecoder();
+  qr.decodeFromImage(arg).then((res) => {
+    console.log(res);
+  });
+});
+
+function handleStream(stream) {
+  console.log(stream, 'stream');
+  const video = document.querySelector('video');
+  video.srcObject = stream;
+
+  console.log(video.srcObject);
+
+  video.onloadedmetadata = (e) => video.play();
+
+
+}
+
+function handleError(e) {
+  console.log(e)
+}
+
+
+
+
+
 //uuid
 const uuidv1 = require('uuid/v1');
 
@@ -100,6 +203,8 @@ class App extends Component {
   }
 
   componentDidMount() {
+
+
 
 
     //检测更新 
@@ -149,17 +254,18 @@ class App extends Component {
     //下载进度条
     ipcRenderer.on('app-downloadProgress', (event, arg) => {
 
+      console.log(arg, 'argargarg');
       if (arg.percent >= 100) {
-        confirm({
-          title: '已更新到最新版本，是否重启启动？',
-          content: '如果重新启动，您将使用最新版本',
-          okText: '是',
-          cancelText: '否',
-          onOk() {
-            ipcRenderer.send('isUpdateNow');
-          },
-          onCancel() { },
-        });
+        // confirm({
+        //   title: '已更新到最新版本，是否重启启动？',
+        //   content: '如果重新启动，您将使用最新版本',
+        //   okText: '是',
+        //   cancelText: '否',
+        //   onOk() {
+        //     ipcRenderer.send('isUpdateNow');
+        //   },
+        //   onCancel() { },
+        // });
 
 
         this.setState({
@@ -175,6 +281,38 @@ class App extends Component {
 
 
     });
+
+    //下载完成
+
+
+    ipcRenderer.on('app-updateDownload', (event, arg) => {
+
+
+      console.log('下载完成了出现这个');
+
+      confirm({
+        title: '已更新到最新版本，是否重启启动？',
+        content: '如果重新启动，您将使用最新版本',
+        okText: '是',
+        cancelText: '否',
+        onOk() {
+          ipcRenderer.send('isUpdateNow');
+        },
+        onCancel() { },
+      });
+
+
+      this.setState({
+        percent: 100,
+        newVersion: false,
+        resetUpdate: true
+      })
+
+
+
+    });
+
+    // app-updateDownload'
 
     this.initMenu();
     this.contextmenuInit();
@@ -193,36 +331,37 @@ class App extends Component {
   initMenu = () => {
 
 
-    const menu = EMenu.buildFromTemplate([{
-      label: "File",
-      submenu: [{
-        label: "New Window"
-      }, {
-        label: "Settings",
-        accelerator: "CmdOrCtrl+,",
-        click: () => {
+    // const menu = EMenu.buildFromTemplate([{
+    //   label: "File",
+    //   submenu: [{
+    //     label: "New Window"
+    //   }, {
+    //     label: "Settings",
+    //     accelerator: "CmdOrCtrl+,",
+    //     click: () => {
 
 
-          ipcRenderer.send("toggle-settings");
-        }
-      }, {
-        type: "separator"
-      }, {
-        label: "Quit",
-        accelerator: "CmdOrCtrl+Q"
-      }]
-    }, {
-      label: "Edit",
-      submenu: [{
-        label: "Menu Item 1"
-      }, {
-        label: "Menu Item 2"
-      }, {
-        label: "Menu Item 3"
-      }]
-    }]);
-    console.log(EMenu);
-    EMenu.setApplicationMenu(menu);
+    //       ipcRenderer.send("toggle-settings");
+    //     }
+    //   }, {
+    //     type: "separator"
+    //   }, {
+    //     label: "Quit",
+    //     accelerator: "CmdOrCtrl+Q"
+    //   }]
+    // }, {
+    //   label: "Edit",
+    //   submenu: [{
+    //     label: "Menu Item 1"
+    //   }, {
+    //     label: "Menu Item 2"
+    //   }, {
+    //     label: "Menu Item 3"
+    //   }]
+    // }]);
+    // console.log(EMenu);
+    EMenu.setApplicationMenu(null);
+    // EMenu.setApplicationMenu(menu);
 
   }
 
@@ -269,9 +408,9 @@ class App extends Component {
 
     window.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      menu.popup({
-        window: remote.getCurrentWindow()
-      })
+      // menu.popup({
+      //   window: remote.getCurrentWindow()
+      // })
     }, false)
   }
 
@@ -332,11 +471,11 @@ class App extends Component {
   handleSubmit = e => {
     // e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      console.log(values, 'values');
-      console.log(err, 'errerr');
 
       //添加地址
-      if (values.title && values.address) {
+      if (values.title && values.address && !err.address) {
+
+
         this.setState({
           addAddressVisible: false
         });
@@ -359,8 +498,7 @@ class App extends Component {
 
 
       //修改地址
-      if (values.titleEdit && values.addressEdit) {
-        console.log('触发修改 ');
+      if (values.titleEdit && values.addressEdit && !err.addressEdit) {
 
         this.setState({
           editAddAddressVisible: false
@@ -445,6 +583,8 @@ class App extends Component {
     this.setState({
       editAddAddressVisible: false
     });
+
+    this.props.form.resetFields();
   }
 
 
@@ -506,7 +646,7 @@ class App extends Component {
             onOk={this.editAddressOk.bind(this)}
             onCancel={this.editAddressCancel.bind(this)}
             okText="确认修改"
-            cancelText="修改添加"
+            cancelText="取消修改"
           >
             <Form onSubmit={this.handleSubmit} ref="editAddAddress" className="login-form" layout={"horizontal"}>
               <Form.Item label="标题">
@@ -529,14 +669,14 @@ class App extends Component {
                     message: '地址不能为空'
                   }, {
 
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
+                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
                     message: '请正确输入地址,开头必需https|http'
 
                   }]
 
                 })(
                   <Input
-                    placeholder="http://demo1.heiqiauto.com"
+                    placeholder="http://demo1.heqiauto.com"
                   />,
                 )}
               </Form.Item>
@@ -589,11 +729,10 @@ class App extends Component {
                     message: '地址不能为空'
                   }, {
 
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https|http'
+                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
+                    message: '请正确输入地址,开头必需https://|http://'
 
                   }]
-
                 })(
                   <Input
                     placeholder="http://demo1.heiqiauto.com"
@@ -634,7 +773,7 @@ class App extends Component {
             ) : (
                   <span>
                     当前版本:{this.state.version}
-                    发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''}
+                    (发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
                   </span>
                 )
             }

@@ -1,19 +1,24 @@
 {
-  "name": "heqi_pc_client91",
-  "version": "1.0.84",
+  "name": "heqi",
+  "version": "1.0.117",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
     "concurrently": "~4.0.1",
     "electron-is-dev": "~1.0.1",
     "electron-log": "~3.0.6",
+    "electron-updater": "4.0.0",
     "fsevents": "~2.0.7",
+    "jimp": "~0.6.4",
+    "qrcode-decoder": "~0.1.1",
+    "qrcode-reader": "~1.0.4",
     "lodash": "~4.17.11",
     "nedb": "~1.8.0",
     "react-color": "~2.17.3",
+    "react-router": "~3.0.0",
+    "react-router-redux": "~4.0.8",
     "taffy": "~2.6.2",
     "uuid": "~3.3.2",
-    "electron-updater": "4.0.0",
     "wait-on": "~3.1.0"
   },
   "scripts": {
@@ -56,8 +61,6 @@
     "react-dom": "~15.5.3",
     "react-electron-web-view": "~2.0.1",
     "react-redux": "~5.0.3",
-    "react-router": "~3.0.0",
-    "react-router-redux": "~4.0.8",
     "react-scripts": "2.0.4",
     "redux": "~3.6.0",
     "redux-thunk": "~2.2.0"
@@ -70,8 +73,12 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://127.0.0.1:8888/"
+        "url": "http://heqiset.heqiauto.com"
       }
-    ]
+    ],
+    "win": {
+      "icon": "./icon.ico",
+      "artifactName": "${productName}_setup_${version}.${ext}"
+    }
   }
 }
