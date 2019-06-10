@@ -188,9 +188,9 @@ app.on('activate', () => {
 });
 
 //接收图片
-
+console.log('123123123')
 ipcMain.on('qrcodeImg', (event, args) => {
-
+  console.log('***************')
   // fs.writeFileSync(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
     fs.writeFile(path.join(os.tmpdir(), 'screenshot.png'),  args,function (error) {
 
@@ -209,8 +209,8 @@ ipcMain.on('qrcodeImg', (event, args) => {
               console.error(err);
               // TODO handle error
             }
-            console.log(value.result);
-            console.log(value);
+            // console.log(value.result);
+            console.log(value, '#######');
           };
           qr.decode(image.bitmap);
         });

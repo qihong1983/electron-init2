@@ -101,7 +101,7 @@ desktopCapturer.getSources({ types: ['window', 'screen'],thumbnailSize: thumbSiz
 
     console.log(sources, 'sources');
 
-    if (source.name === 'Screen 1') {
+    if (source.name === 'Entire screen') {
 
       console.log(os);
       const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');

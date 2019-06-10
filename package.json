@@ -1,6 +1,6 @@
 {
   "name": "heqi",
-  "version": "1.0.115",
+  "version": "1.0.117",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -10,6 +10,8 @@
     "electron-updater": "4.0.0",
     "fsevents": "~2.0.7",
     "jimp": "~0.6.4",
+    "qrcode-decoder": "~0.1.1",
+    "qrcode-reader": "~1.0.4",
     "lodash": "~4.17.11",
     "nedb": "~1.8.0",
     "react-color": "~2.17.3",
@@ -55,8 +57,6 @@
     "electron-winstaller": "~2.7.0",
     "loadash": "~1.0.0",
     "moment": "~2.22.2",
-    "qrcode-decoder": "~0.1.1",
-    "qrcode-reader": "~1.0.4",
     "react": "~15.6.1",
     "react-dom": "~15.5.3",
     "react-electron-web-view": "~2.0.1",
