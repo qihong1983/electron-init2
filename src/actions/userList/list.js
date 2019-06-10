@@ -8,7 +8,7 @@ const getTableData = (data) => {
 
 	console.log('###getTable参数###', data);
 
-	return function(dispatch) {
+	return function (dispatch) {
 
 		dispatch({
 			type: "USER_LIST_OFFSET",

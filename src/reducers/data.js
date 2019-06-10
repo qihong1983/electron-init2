@@ -1,13 +1,24 @@
- import {
- 	combineReducers
- } from 'redux';
+import {
+	combineReducers
+} from 'redux';
 
- import {
- 	list
- } from './userList/list';
+import {
+	list
+} from './userList/list';
+
+
+import {
+	App
+} from './App/App';
 
 
 
- export {
- 	list
- };
+const Reducers = combineReducers({
+	list,
+	App
+});
+
+
+export {
+	Reducers
+};

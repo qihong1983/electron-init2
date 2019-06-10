@@ -25,11 +25,13 @@ import {
 import { SketchPicker } from 'react-color';
 
 
-import * as actionCreators from './actions/userList/list';
+import * as actionCreators from './actions/App/App';
 
 import _ from 'lodash';
 
 import QrcodeDecoder from 'qrcode-decoder';
+
+
 import {
   Layout,
   Menu,
@@ -79,132 +81,19 @@ const app = window.electron.app;
 
 const os = require('os');
 
-var desktopCapturer = window.electron.desktopCapturer;
-
-const electronScreen = window.electron.screen;
-
-
-
-
-function determineScreenShotSize () {
-    const screenSize = electronScreen.getPrimaryDisplay().workAreaSize
-    const maxDimension = Math.max(screenSize.width, screenSize.height)
-    return {
-      width: maxDimension * window.devicePixelRatio,
-      height: maxDimension * window.devicePixelRatio
-    }
-  }
-
-const thumbSize = determineScreenShotSize();
-desktopCapturer.getSources({ types: ['window', 'screen'],thumbnailSize: thumbSize }).then(async sources => {
-  for (const source of sources) {
-
-    console.log(sources, 'sources');
-
-    if (source.name === 'Entire screen') {
-
-      console.log(os);
-      const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
-      console.log(os.tmpdir(), 'os.tmpdir()');
-      console.log(fs);
-
-      console.log(source.thumbnail, '*****####***');
-      console.log(source.thumbnail.toPNG(), '*****####***');
-
-      ipcRenderer.send('qrcodeImg',source.thumbnail.toPNG());
-      
-
-
-      // try {
-      //   const stream = await navigator.mediaDevices.getUserMedia({
-      //     audio: false,
-      //     video: {
-      //       mandatory: {
-      //         chromeMediaSource: 'desktop',
-      //         chromeMediaSourceId: source.id,
-      //         minWidth: 1280,
-      //         maxWidth: 1280,
-      //         minHeight: 720,
-      //         maxHeight: 720
-      //       }
-      //     }
-      //   })
-      //   handleStream(stream)
-      // } catch (e) {
-      //   handleError(e)
-      // }
-      return
-    }
-  }
-});
-
-
-//接收图片
-ipcRenderer.on('app-getImg', (event, arg) => {
-
-  console.log(arg, 'argarg');
-  // var qr = new QrcodeDecoder();
-  // qr.decodeFromImage("http://i6.hexunimg.cn/2014-01-15/161426168.jpg").then((res) => {
-  //   console.log(res, '为什么');
-  // });
-
-  var qr = new QrcodeDecoder();
-  qr.decodeFromImage(arg).then((res) => {
-    console.log(res);
-  });
-});
-
-function handleStream(stream) {
-  console.log(stream, 'stream');
-  const video = document.querySelector('video');
-  video.srcObject = stream;
-
-  console.log(video.srcObject);
-
-  video.onloadedmetadata = (e) => video.play();
-
-
-}
-
-function handleError(e) {
-  console.log(e)
-}
-
-
-
-
-
 //uuid
 const uuidv1 = require('uuid/v1');
 
-
-
-
-
 class App extends Component {
-
 
   constructor(props) {
     super(props);
     this.state = {
-      addAddressVisible: false,
-      editAddAddressVisible: false,
-      background: '#e56045',
-      buttonChangeColorLogo: false,
-      items: [],
-      editObj: null,
-      url: null,
-      version: '',
-      sendVersionTime: '',
-      newVersion: false,
-      percent: 0,
-      resetUpdate: false
+      url: null
     }
   }
 
   componentDidMount() {
-
-
 
 
     //检测更新 
@@ -216,38 +105,29 @@ class App extends Component {
 
     //接收版本和时间
     ipcRenderer.on('app-getVersionTime', (event, arg, arg2) => {
-      console.log(arg, 'arg');
+ 
 
-      console.log(arg2, 'arg2');
 
-      this.setState({
-        version: arg,
-        sendVersionTime: arg2
-      });
+      this.props.App_actions.setVersion(arg);
+      this.props.App_actions.sendVersionTime(arg2);
+      
     });
 
 
 
     //接收数据
     ipcRenderer.on('app-sendData', (event, arg, arg2) => {
-      this.setState({
-        items: arg,
-        url: arg2
-      })
+
+      this.props.App_actions.setItems(arg);
     });
 
 
     //发现新版本
     ipcRenderer.on('app-getNewVersion', (event, arg) => {
 
-      console.log('检测到新版本了吗');
-      console.log(arg, '****');
+      this.props.App_actions.setNewVersion(arg);
 
 
-
-      this.setState({
-        newVersion: arg
-      });
     });
 
 
@@ -256,27 +136,17 @@ class App extends Component {
 
       console.log(arg, 'argargarg');
       if (arg.percent >= 100) {
-        // confirm({
-        //   title: '已更新到最新版本，是否重启启动？',
-        //   content: '如果重新启动，您将使用最新版本',
-        //   okText: '是',
-        //   cancelText: '否',
-        //   onOk() {
-        //     ipcRenderer.send('isUpdateNow');
-        //   },
-        //   onCancel() { },
-        // });
 
+        this.props.App_actions.setNewVersion(false);
 
-        this.setState({
-          percent: parseInt(arg.percent, 10),
-          newVersion: false,
-          resetUpdate: true
-        })
+        this.props.App_actions.setPercent(parseInt(arg.percent, 10));
+
+        this.props.App_actions.setResetUpdate(true);
+
       } else {
-        this.setState({
-          percent: parseInt(arg.percent, 10)
-        })
+
+        this.props.App_actions.setPercent(parseInt(arg.percent, 10));
+
       }
 
 
@@ -302,17 +172,18 @@ class App extends Component {
       });
 
 
-      this.setState({
-        percent: 100,
-        newVersion: false,
-        resetUpdate: true
-      })
+
+      this.props.App_actions.setNewVersion(false);
+
+
+      this.props.App_actions.setPercent(100);
+      this.props.App_actions.setResetUpdate(true);
+
 
 
 
     });
 
-    // app-updateDownload'
 
     this.initMenu();
     this.contextmenuInit();
@@ -322,44 +193,11 @@ class App extends Component {
 
 
   clickHandle = (img) => {
-
-
     ipcRenderer.send('toggle-image', img);
-
   }
 
+
   initMenu = () => {
-
-
-    // const menu = EMenu.buildFromTemplate([{
-    //   label: "File",
-    //   submenu: [{
-    //     label: "New Window"
-    //   }, {
-    //     label: "Settings",
-    //     accelerator: "CmdOrCtrl+,",
-    //     click: () => {
-
-
-    //       ipcRenderer.send("toggle-settings");
-    //     }
-    //   }, {
-    //     type: "separator"
-    //   }, {
-    //     label: "Quit",
-    //     accelerator: "CmdOrCtrl+Q"
-    //   }]
-    // }, {
-    //   label: "Edit",
-    //   submenu: [{
-    //     label: "Menu Item 1"
-    //   }, {
-    //     label: "Menu Item 2"
-    //   }, {
-    //     label: "Menu Item 3"
-    //   }]
-    // }]);
-    // console.log(EMenu);
     EMenu.setApplicationMenu(null);
     // EMenu.setApplicationMenu(menu);
 
@@ -428,9 +266,9 @@ class App extends Component {
   }
 
   addAddress(e) {
-    this.setState({
-      addAddressVisible: true
-    });
+
+
+    this.props.App_actions.addAddressVisible(true);
   }
 
   addAddressOk(e) {
@@ -446,24 +284,33 @@ class App extends Component {
   addAddressCancel(e) {
 
     this.props.form.resetFields();
-    this.setState({
-      addAddressVisible: false
-    });
+    // this.setState({
+    //   addAddressVisible: false
+    // });
+
+    this.props.App_actions.addAddressVisible(false);
   }
 
   handleChangeComplete = (color) => {
-    this.setState({ background: color.hex });
+    // this.setState({ background: color.hex });
+    this.props.App_actions.setBackGround(color.hex);
   };
 
   changeBC() {
-    if (this.state.buttonChangeColorLogo) {
-      this.setState({
-        buttonChangeColorLogo: false
-      })
+
+    
+    if (this.props.App_reduces.buttonChangeColorLogo) {
+      // this.setState({
+      //   buttonChangeColorLogo: false
+      // })
+
+      this.props.App_actions.setButtonChangeColorLogo(false);
     } else {
-      this.setState({
-        buttonChangeColorLogo: true
-      })
+      this.props.App_actions.setButtonChangeColorLogo(true);
+
+      // this.setState({
+      //   buttonChangeColorLogo: true
+      // })
     }
   }
 
@@ -476,47 +323,48 @@ class App extends Component {
       if (values.title && values.address && !err.address) {
 
 
-        this.setState({
-          addAddressVisible: false
-        });
+        // this.setState({
+        //   addAddressVisible: false
+        // });
+
+        this.props.App_actions.addAddressVisible(false);
 
         var data = {
           id: uuidv1(),
           title: values.title,
           address: values.address,
           sortTitle: values.title.substr(0, 1),
-          color: this.state.background
+          color: this.props.App_reduces.background
         }
 
         ipcRenderer.send('app-addAddress', data);
 
         this.props.form.resetFields();
-        this.setState({
-          background: '#e56045'
-        });
+
+        this.props.App_actions.setBackGround('#e56045');
+
+        // this.setState({
+        //   background: '#e56045'
+        // });
       }
 
 
       //修改地址
       if (values.titleEdit && values.addressEdit && !err.addressEdit) {
 
-        this.setState({
-          editAddAddressVisible: false
-        });
+        this.props.App_actions.editAddAddressVisible(false);
 
 
         var data = {
-          id: this.state.editObj.id,
+          id: this.props.App_reduces.editObj.id,
           title: values.titleEdit,
           address: values.addressEdit,
           sortTitle: values.titleEdit.substr(0, 1),
-          color: this.state.background
+          color: this.props.App_reduces.background
         }
         ipcRenderer.send('app-editAddress', data);
         this.props.form.resetFields();
-        this.setState({
-          background: '#e56045'
-        });
+        this.props.App_actions.setBackGround('#e56045');
       }
 
 
@@ -541,31 +389,31 @@ class App extends Component {
     console.log(e.currentTarget.dataset.id, '**');
 
 
-
-    var oneData = _.find(this.state.items, (o) => {
+    var oneData = _.find(this.props.App_reduces.items, (o) => {
       return o.id == e.currentTarget.dataset.id;
     });
 
+    // var oneData = _.find(this.state.items, (o) => {
+    //   return o.id == e.currentTarget.dataset.id;
+    // });
 
-    console.log(oneData, 'oneData');
+
 
     this.props.form.setFieldsValue({
       addressEdit: oneData.address,
       titleEdit: oneData.title
     })
 
-    this.setState({
-      editAddAddressVisible: true,
-      editObj: oneData,
-      background: oneData.color
-    });
-
-    console.log(oneData, 'oneData');
+    this.props.App_actions.editAddAddressVisible(true);
 
 
+
+    this.props.App_actions.setEditObj(oneData);
+
+
+    this.props.App_actions.setBackGround(oneData.color);
+   
   }
-
-
 
   /**
    * 确认修改 
@@ -580,9 +428,9 @@ class App extends Component {
    * 取消修改
    */
   editAddressCancel() {
-    this.setState({
-      editAddAddressVisible: false
-    });
+
+
+    this.props.App_actions.editAddAddressVisible(false);
 
     this.props.form.resetFields();
   }
@@ -597,6 +445,9 @@ class App extends Component {
 
     const { getFieldDecorator } = this.props.form;
 
+
+    console.log(this.props.App, 'this.props.App');
+    console.log(this.props, 'this.props');
 
     return (
       <Layout className="layout" height={window.document.body.offsetHeight + 'px'}>
@@ -625,7 +476,7 @@ class App extends Component {
                 xxl: 3,
               }}
               locale={{ "emptyText": "还没有添加地址" }}
-              dataSource={this.state.items}
+              dataSource={this.props.App_reduces.items}
               renderItem={item => (
                 <List.Item >
                   <Card className="itemCard" cover={<Avatar className="ava" onClick={() => this.openWebSite(item.address)} style={{ backgroundColor: item.color, marginRight: '16px', verticalAlign: 'middle' }} size={64}>
@@ -642,7 +493,7 @@ class App extends Component {
           <Modal
             className="editAddressModal"
             title="修改地址"
-            visible={this.state.editAddAddressVisible}
+            visible={this.props.App_reduces.editAddAddressVisible}
             onOk={this.editAddressOk.bind(this)}
             onCancel={this.editAddressCancel.bind(this)}
             okText="确认修改"
@@ -683,13 +534,13 @@ class App extends Component {
               <Form.Item label="颜色">
 
                 <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
-                <Avatar style={{ backgroundColor: this.state.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
+                <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
                   例
           </Avatar>
 
                 {
-                  this.state.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
-                    color={this.state.background}
+                 this.props.App_reduces.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
+                    color={this.props.App_reduces.background}
                     onChangeComplete={this.handleChangeComplete}
                   />) : null
                 }
@@ -702,7 +553,7 @@ class App extends Component {
           <Modal
             className="addressModal"
             title="添加地址"
-            visible={this.state.addAddressVisible}
+            visible={this.props.App_reduces.addAddressVisible}
             onOk={this.addAddressOk.bind(this)}
             onCancel={this.addAddressCancel.bind(this)}
             okText="确认添加"
@@ -742,13 +593,13 @@ class App extends Component {
               <Form.Item label="颜色">
 
                 <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
-                <Avatar style={{ backgroundColor: this.state.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
+                <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
                   例
           </Avatar>
 
                 {
-                  this.state.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
-                    color={this.state.background}
+                  this.props.App_reduces.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
+                    color={this.props.App_reduces.background}
                     onChangeComplete={this.handleChangeComplete}
                   />) : null
                 }
@@ -761,24 +612,22 @@ class App extends Component {
         <Footer>
           <div>
 
-            {this.state.newVersion ? (
+            {this.props.App_reduces.newVersion ? (
               <div className="clearfix">
                 <div className="left">检测到新版本，正在下载,请稍后:</div>
                 <div className="left" style={{ width: "100px" }}>
-                  <Progress percent={this.state.percent ? this.state.percent : 0} strokeColor={'#e56045'} status="active" />
+                  <Progress percent={this.props.App_reduces.percent ? this.props.App_reduces.percent : 0} strokeColor={'#e56045'} status="active" />
                 </div>
               </div>
-            ) : this.state.resetUpdate ? (
+            ) : this.props.App_reduces.resetUpdate ? (
               <button type="primary" onClick={this.resetUpdateBtn.bind(this)}>重启</button>
             ) : (
                   <span>
-                    当前版本:{this.state.version}
-                    (发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
+                    当前版本:{this.props.App_reduces.version}
+                    (发布时间:{this.props.App_reduces.sendVersionTime ? moment(this.props.App_reduces.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
                   </span>
                 )
             }
-
-
 
           </div>
         </Footer>
@@ -788,11 +637,11 @@ class App extends Component {
 }
 
 
-//将state.counter绑定到props的counter
+//将state绑定到props
 const mapStateToProps = (state) => {
   console.log(state, 'state');
   return {
-    userList: state.userList
+    App_reduces: state.Reducers.App
   }
 };
 
@@ -800,7 +649,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
 
   //全量
-  return bindActionCreators(actionCreators, dispatch);
+  return {
+    App_actions: bindActionCreators(actionCreators, dispatch)
+  };
 
 };
 
