@@ -22,7 +22,8 @@ const App = (state, action) => {
             sendVersionTime: '',
             newVersion: false,
             percent: 0,
-            resetUpdate: false
+            resetUpdate: false,
+            formViewInfo: null
         };
     }
 
@@ -86,6 +87,12 @@ const App = (state, action) => {
             return Object.assign({}, state, {
                 resetUpdate: action.payload
             });
+
+        case "APP_FORMVIEWINFO":
+                return Object.assign({}, state, {
+                    formViewInfo: action.payload
+                });
+
 
         default:
             //返回初始化

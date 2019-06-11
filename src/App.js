@@ -29,7 +29,6 @@ import * as actionCreators from './actions/App/App';
 
 import _ from 'lodash';
 
-import QrcodeDecoder from 'qrcode-decoder';
 
 
 import {
@@ -105,12 +104,12 @@ class App extends Component {
 
     //接收版本和时间
     ipcRenderer.on('app-getVersionTime', (event, arg, arg2) => {
- 
+
 
 
       this.props.App_actions.setVersion(arg);
       this.props.App_actions.sendVersionTime(arg2);
-      
+
     });
 
 
@@ -246,9 +245,7 @@ class App extends Component {
 
     window.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      // menu.popup({
-      //   window: remote.getCurrentWindow()
-      // })
+
     }, false)
   }
 
@@ -267,14 +264,17 @@ class App extends Component {
 
   addAddress(e) {
 
+    this.props.App_actions.setFormViewInfo({
+      title: "添加地址",
+      canelAddress: "取消添加",
+      okAddress: "确认添加",
+      flag: "add"
+    });
 
     this.props.App_actions.addAddressVisible(true);
   }
 
   addAddressOk(e) {
-
-    console.log(this.refs.addAddress);
-
 
     this.refs.addAddress.props.onSubmit();
 
@@ -284,33 +284,24 @@ class App extends Component {
   addAddressCancel(e) {
 
     this.props.form.resetFields();
-    // this.setState({
-    //   addAddressVisible: false
-    // });
 
     this.props.App_actions.addAddressVisible(false);
   }
 
   handleChangeComplete = (color) => {
-    // this.setState({ background: color.hex });
+
     this.props.App_actions.setBackGround(color.hex);
   };
 
   changeBC() {
 
-    
+
     if (this.props.App_reduces.buttonChangeColorLogo) {
-      // this.setState({
-      //   buttonChangeColorLogo: false
-      // })
 
       this.props.App_actions.setButtonChangeColorLogo(false);
     } else {
       this.props.App_actions.setButtonChangeColorLogo(true);
 
-      // this.setState({
-      //   buttonChangeColorLogo: true
-      // })
     }
   }
 
@@ -319,54 +310,36 @@ class App extends Component {
     // e.preventDefault();
     this.props.form.validateFields((err, values) => {
 
-      //添加地址
-      if (values.title && values.address && !err.address) {
-
-
-        // this.setState({
-        //   addAddressVisible: false
-        // });
-
+      if (!err) {
         this.props.App_actions.addAddressVisible(false);
 
-        var data = {
-          id: uuidv1(),
-          title: values.title,
-          address: values.address,
-          sortTitle: values.title.substr(0, 1),
-          color: this.props.App_reduces.background
+        if (this.props.App_reduces.formViewInfo.flag == 'add') {
+
+          var data = {
+            id: uuidv1(),
+            title: values.title,
+            address: values.address,
+            sortTitle: values.title.substr(0, 1),
+            color: this.props.App_reduces.background
+          }
+          ipcRenderer.send('app-addAddress', data);
+        } else {
+          var data = {
+            id: this.props.App_reduces.editObj.id,
+            title: values.title,
+            address: values.address,
+            sortTitle: values.title.substr(0, 1),
+            color: this.props.App_reduces.background
+          }
+          ipcRenderer.send('app-editAddress', data);
         }
 
-        ipcRenderer.send('app-addAddress', data);
 
         this.props.form.resetFields();
 
         this.props.App_actions.setBackGround('#e56045');
 
-        // this.setState({
-        //   background: '#e56045'
-        // });
       }
-
-
-      //修改地址
-      if (values.titleEdit && values.addressEdit && !err.addressEdit) {
-
-        this.props.App_actions.editAddAddressVisible(false);
-
-
-        var data = {
-          id: this.props.App_reduces.editObj.id,
-          title: values.titleEdit,
-          address: values.addressEdit,
-          sortTitle: values.titleEdit.substr(0, 1),
-          color: this.props.App_reduces.background
-        }
-        ipcRenderer.send('app-editAddress', data);
-        this.props.form.resetFields();
-        this.props.App_actions.setBackGround('#e56045');
-      }
-
 
 
     });
@@ -393,47 +366,30 @@ class App extends Component {
       return o.id == e.currentTarget.dataset.id;
     });
 
-    // var oneData = _.find(this.state.items, (o) => {
-    //   return o.id == e.currentTarget.dataset.id;
-    // });
 
 
+    this.props.App_actions.setFormViewInfo({
+      title: "修改地址",
+      canelAddress: "取消修改",
+      okAddress: "确认修改",
+      flag: "edit"
+    });
 
     this.props.form.setFieldsValue({
-      addressEdit: oneData.address,
-      titleEdit: oneData.title
-    })
+      address: oneData.address,
+      title: oneData.title
+    });
 
-    this.props.App_actions.editAddAddressVisible(true);
-
+    this.props.App_actions.addAddressVisible(true);
 
 
     this.props.App_actions.setEditObj(oneData);
 
-
     this.props.App_actions.setBackGround(oneData.color);
-   
+
   }
 
-  /**
-   * 确认修改 
-   */
 
-  editAddressOk(e) {
-    // debugger;
-    this.refs.editAddAddress.props.onSubmit();
-  }
-
-  /**
-   * 取消修改
-   */
-  editAddressCancel() {
-
-
-    this.props.App_actions.editAddAddressVisible(false);
-
-    this.props.form.resetFields();
-  }
 
 
 
@@ -490,74 +446,15 @@ class App extends Component {
 
           </Card>
 
-          <Modal
-            className="editAddressModal"
-            title="修改地址"
-            visible={this.props.App_reduces.editAddAddressVisible}
-            onOk={this.editAddressOk.bind(this)}
-            onCancel={this.editAddressCancel.bind(this)}
-            okText="确认修改"
-            cancelText="取消修改"
-          >
-            <Form onSubmit={this.handleSubmit} ref="editAddAddress" className="login-form" layout={"horizontal"}>
-              <Form.Item label="标题">
-                {getFieldDecorator('titleEdit', {
-                  rules: [{ required: true, message: '标题不能为空' }]
-                })(
-                  <Input
-                    placeholder="这里输入标题"
-                  />,
-                )}
-              </Form.Item>
-
-
-              <Form.Item label="地址">
-                {getFieldDecorator('addressEdit', {
-                  rules: [{
-                    required: true,
-                    whitespace: true,
-                    type: 'string',
-                    message: '地址不能为空'
-                  }, {
-
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https|http'
-
-                  }]
-
-                })(
-                  <Input
-                    placeholder="http://demo1.heqiauto.com"
-                  />,
-                )}
-              </Form.Item>
-              <Form.Item label="颜色">
-
-                <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
-                <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
-                  例
-          </Avatar>
-
-                {
-                 this.props.App_reduces.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
-                    color={this.props.App_reduces.background}
-                    onChangeComplete={this.handleChangeComplete}
-                  />) : null
-                }
-
-              </Form.Item>
-
-            </Form>
-          </Modal>
 
           <Modal
             className="addressModal"
-            title="添加地址"
+            title={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.title : ''}
             visible={this.props.App_reduces.addAddressVisible}
             onOk={this.addAddressOk.bind(this)}
             onCancel={this.addAddressCancel.bind(this)}
-            okText="确认添加"
-            cancelText="取消添加"
+            okText={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.okAddress : ''}
+            cancelText={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.canelAddress : ''}
           >
             <Form onSubmit={this.handleSubmit} ref="addAddress" className="login-form" layout={"horizontal"}>
               <Form.Item label="标题">

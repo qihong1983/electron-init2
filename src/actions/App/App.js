@@ -170,6 +170,23 @@ const setPercent =(data) => {
     }
  }
 
+
+ /**
+  * 表单信息
+  * 
+  * @method setFormViewInfo
+  * @param {Object} data
+  */
+const setFormViewInfo = (data) => {
+    return function (dispatch) {
+        dispatch({
+            type: "APP_FORMVIEWINFO",
+            payload: data
+        })
+    }
+}
+
+
 export {
     //编辑地址
     editAddAddressVisible,
@@ -192,5 +209,7 @@ export {
     //更新进度条的值
     setPercent,
     //是否显示按扭重启
-    setResetUpdate
+    setResetUpdate,
+    //设置表单信息
+    setFormViewInfo
 }

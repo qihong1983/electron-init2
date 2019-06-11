@@ -269,8 +269,15 @@ ipcMain.on('app-addAddress', (event, args) => {
 
 //编辑地址
 ipcMain.on('app-editAddress', (event, args) => {
+
+  console.log(args, '*****');
   data_db.update({ id: args.id }, { $set: { title: args.title, address: args.address, color: args.color, sortTitle: args.sortTitle } }, { multi: true }, function (err, numReplaced) {
+  
+    console.log(err, numReplaced, '&&&&&&&&&&&&&&&&');
+  
     data_db.find({}, function (err, docs) {
+
+      console.log(docs, 'docs*****');
       mainWindow.webContents.send('app-sendData', docs);
     });
   });
