@@ -1,13 +1,9 @@
 import React, {
   Component
 } from 'react';
-import logo from './logo.svg';
 import './App.css';
 // import axios from 'axios';
-import {
-  Link,
-  IndexLink
-} from 'react-router';
+
 
 
 import moment from 'moment';
