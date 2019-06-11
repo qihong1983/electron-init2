@@ -33,8 +33,6 @@ import _ from 'lodash';
 
 import {
   Layout,
-  Menu,
-  Breadcrumb,
   Icon,
   Card,
   Avatar,
@@ -43,8 +41,6 @@ import {
   Modal,
   Form,
   Input,
-  Row,
-  Col,
   List,
   Progress
 } from 'antd';
@@ -62,23 +58,13 @@ const confirm = Modal.confirm;
 
 const { Meta } = Card;
 
-const electron = window.electron;
 
 const ipcRenderer = window.electron.ipcRenderer;
 
-const remote = window.electron.remote;
 
 const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
-
-const path = require('path');
-
-var fs = require("fs")
-
-const app = window.electron.app;
-
-const os = require('os');
 
 //uuid
 const uuidv1 = require('uuid/v1');
@@ -203,16 +189,6 @@ class App extends Component {
   }
 
   contextmenuInit = () => {
-
-    const electron = window.electron;
-
-
-    const ipcRenderer = window.electron.ipcRenderer;
-
-
-    const remote = window.electron.remote;
-    const Menu = window.electron.remote.Menu;
-    const MenuItem = window.electron.remote.MenuItem;
 
 
     const menu = new EMenu();
