@@ -4,15 +4,11 @@ import React, {
 import './App.css';
 // import axios from 'axios';
 
-
-
 import moment from 'moment';
-
 
 import {
   connect
 } from 'react-redux';
-
 
 import {
   bindActionCreators
@@ -115,7 +111,6 @@ class App extends Component {
     //下载进度条
     ipcRenderer.on('app-downloadProgress', (event, arg) => {
 
-      console.log(arg, 'argargarg');
       if (arg.percent >= 100) {
 
         this.props.App_actions.setNewVersion(false);
@@ -139,7 +134,6 @@ class App extends Component {
     ipcRenderer.on('app-updateDownload', (event, arg) => {
 
 
-      console.log('下载完成了出现这个');
 
       confirm({
         title: '已更新到最新版本，是否重启启动？',
@@ -191,7 +185,6 @@ class App extends Component {
     menu.append(new EMenuItem({
       label: '右键菜单一',
       click() {
-        console.log('item 1 clicked')
       }
     }))
 
@@ -325,13 +318,11 @@ class App extends Component {
   }
 
   removeCard(e) {
-    console.log(e.currentTarget.dataset.id, '****');
 
     ipcRenderer.send('app-removeCard', e.currentTarget.dataset.id);
   }
 
   editAddress(e) {
-    console.log(e.currentTarget.dataset.id, '**');
 
 
     var oneData = _.find(this.props.App_reduces.items, (o) => {
@@ -362,9 +353,6 @@ class App extends Component {
   }
 
 
-
-
-
   resetUpdateBtn() {
     ipcRenderer.send('isUpdateNow');
   }
@@ -374,8 +362,7 @@ class App extends Component {
     const { getFieldDecorator } = this.props.form;
 
 
-    console.log(this.props.App, 'this.props.App');
-    console.log(this.props, 'this.props');
+
 
     return (
       <Layout className="layout" height={window.document.body.offsetHeight + 'px'}>
@@ -480,7 +467,6 @@ class App extends Component {
         </Content>
         <Footer>
           <div>
-
             {this.props.App_reduces.newVersion ? (
               <div className="clearfix">
                 <div className="left">检测到新版本，正在下载,请稍后:</div>
@@ -508,7 +494,6 @@ class App extends Component {
 
 //将state绑定到props
 const mapStateToProps = (state) => {
-  console.log(state, 'state');
   return {
     App_reduces: state.Reducers.App
   }
@@ -527,5 +512,3 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 App = Form.create({ name: 'normal_login' })(App);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-
-// export default App;
