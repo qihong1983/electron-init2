@@ -1,5 +1,5 @@
 import React, {
-  Component
+Component
 } from 'react';
 import './App.css';
 // import axios from 'axios';
@@ -278,24 +278,36 @@ class App extends Component {
       if (!err) {
         this.props.App_actions.addAddressVisible(false);
 
-        if (this.props.App_reduces.formViewInfo.flag == 'add') {
+        var data = {
+          id: uuidv1(),
+          title: values.title,
+          address: values.address,
+          sortTitle: values.title.substr(0, 1),
+          color: this.props.App_reduces.background
+        }
 
-          var data = {
-            id: uuidv1(),
-            title: values.title,
-            address: values.address,
-            sortTitle: values.title.substr(0, 1),
-            color: this.props.App_reduces.background
-          }
+        if (this.props.App_reduces.formViewInfo.flag === 'add') {
+
+          // var data = {
+          //   id: uuidv1(),
+          //   title: values.title,
+          //   address: values.address,
+          //   sortTitle: values.title.substr(0, 1),
+          //   color: this.props.App_reduces.background
+          // }
+
+          data.id = uuidv1();
           ipcRenderer.send('app-addAddress', data);
         } else {
-          var data = {
-            id: this.props.App_reduces.editObj.id,
-            title: values.title,
-            address: values.address,
-            sortTitle: values.title.substr(0, 1),
-            color: this.props.App_reduces.background
-          }
+          // var data = {
+          //   id: this.props.App_reduces.editObj.id,
+          //   title: values.title,
+          //   address: values.address,
+          //   sortTitle: values.title.substr(0, 1),
+          //   color: this.props.App_reduces.background
+          // }
+
+          data.id = this.props.App_reduces.editObj.id;
           ipcRenderer.send('app-editAddress', data);
         }
 
@@ -326,7 +338,7 @@ class App extends Component {
 
 
     var oneData = _.find(this.props.App_reduces.items, (o) => {
-      return o.id == e.currentTarget.dataset.id;
+      return o.id === e.currentTarget.dataset.id;
     });
 
 
@@ -405,7 +417,6 @@ class App extends Component {
 
           </Card>
 
-
           <Modal
             className="addressModal"
             title={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.title : ''}
@@ -448,7 +459,7 @@ class App extends Component {
               </Form.Item>
               <Form.Item label="颜色">
 
-                <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
+                <Button className="select-color-button" onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
                 <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
                   例
           </Avatar>
