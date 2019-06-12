@@ -125,7 +125,6 @@ class App extends Component {
 
       }
 
-
     });
 
     //下载完成
@@ -161,57 +160,17 @@ class App extends Component {
 
 
     this.initMenu();
-    this.contextmenuInit();
   }
-
-
 
 
   clickHandle = (img) => {
     ipcRenderer.send('toggle-image', img);
   }
 
-
   initMenu = () => {
     EMenu.setApplicationMenu(null);
     // EMenu.setApplicationMenu(menu);
 
-  }
-
-  contextmenuInit = () => {
-
-
-    const menu = new EMenu();
-    menu.append(new EMenuItem({
-      label: '右键菜单一',
-      click() {
-      }
-    }))
-
-    menu.append(new EMenuItem({
-      label: '右键菜单二',
-    }))
-    menu.append(new EMenuItem({
-      type: 'separator'
-    }))
-
-
-    menu.append(new EMenuItem({
-      label: '右键复选菜单二',
-      type: 'checkbox',
-      checked: true
-    }))
-
-    menu.append(new EMenuItem({
-      label: '右键复选菜单三',
-      type: 'checkbox',
-      checked: true
-    }))
-
-    window.addEventListener('contextmenu', (e) => {
-      e.preventDefault()
-
-    }, false)
   }
 
   closeApp() {
@@ -237,12 +196,12 @@ class App extends Component {
     });
 
     this.props.App_actions.addAddressVisible(true);
+
   }
 
   addAddressOk(e) {
 
     this.refs.addAddress.props.onSubmit();
-
 
   }
 
@@ -251,6 +210,7 @@ class App extends Component {
     this.props.form.resetFields();
 
     this.props.App_actions.addAddressVisible(false);
+
   }
 
   handleChangeComplete = (color) => {
@@ -288,24 +248,9 @@ class App extends Component {
 
         if (this.props.App_reduces.formViewInfo.flag === 'add') {
 
-          // var data = {
-          //   id: uuidv1(),
-          //   title: values.title,
-          //   address: values.address,
-          //   sortTitle: values.title.substr(0, 1),
-          //   color: this.props.App_reduces.background
-          // }
-
           data.id = uuidv1();
           ipcRenderer.send('app-addAddress', data);
         } else {
-          // var data = {
-          //   id: this.props.App_reduces.editObj.id,
-          //   title: values.title,
-          //   address: values.address,
-          //   sortTitle: values.title.substr(0, 1),
-          //   color: this.props.App_reduces.background
-          // }
 
           data.id = this.props.App_reduces.editObj.id;
           ipcRenderer.send('app-editAddress', data);
