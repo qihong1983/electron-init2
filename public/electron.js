@@ -93,23 +93,25 @@ function createWindow() {
   mainWindow.flashFrame(true);
   mainWindow.setSkipTaskbar(true);
 
-  var notification = new Notification({
-    title: "标题",
-    body: "描述"
-  })
+  // var notification = new Notification({
+  //   title: "标题",
+  //   body: "描述"
+  // })
 
-  notification.show();
+  // notification.show();
 
 
   mainWindow.on('minimize', () => {
+    console.log(11111);
+    mainWindow.setSkipTaskbar(true);
+    console.log(222222);
 
-    mainWindow.setSkipTaskbar(false);
   })
 
   mainWindow.on('close', (event) => {
 
     console.log('closeed test');
-    mainWindow.setSkipTaskbar(false);
+    // mainWindow.setSkipTaskbar(false);
     // mainWindow = null;
 
     // event.preventDefault();
@@ -223,16 +225,17 @@ function createWindow() {
     autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
 
       console.log('##############');
-      mainWindow.webContents.send('app-updateDownload', true);
 
 
+      setTimeout(function () {
+        mainWindow.webContents.send('app-updateDownload', true);
 
 
-      ipcMain.on('isUpdateNow', (e, arg) => {
-        //some code here to handle event
-        autoUpdater.quitAndInstall();
-      });
-
+        ipcMain.on('isUpdateNow', (e, arg) => {
+          //some code here to handle event
+          autoUpdater.quitAndInstall();
+        });
+      }, 1000)
 
     });
 

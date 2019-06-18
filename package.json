@@ -1,6 +1,6 @@
 {
-  "name": "heqi",
-  "version": "1.0.155",
+  "name": "heqi2",
+  "version": "1.0.174",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -74,12 +74,26 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://heqiset.heqiauto.com"
+        "url": "http://192.168.1.112:8888",
+        "useMultipleRangeRequest": false
       }
     ],
     "win": {
       "icon": "./icon.ico",
-      "artifactName": "${productName}_setup_${version}.${ext}"
+      "artifactName": "${productName}_setup_${version}.${ext}",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "runAfterFinish": true,
+      "unicode": true,
+      "differentialPackage": true
     }
   }
 }
