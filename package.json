@@ -1,6 +1,6 @@
 {
   "name": "heqi2",
-  "version": "1.0.174",
+  "version": "1.0.181",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
@@ -81,18 +81,12 @@
     "win": {
       "icon": "./icon.ico",
       "artifactName": "${productName}_setup_${version}.${ext}",
-      "target": [
-        "nsis"
-      ]
+      "target": "nsis-web"
     },
-    "nsis": {
+    "nsisWeb": {
       "oneClick": false,
       "perMachine": true,
-      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "runAfterFinish": true,
-      "unicode": true,
       "differentialPackage": true
     }
   }

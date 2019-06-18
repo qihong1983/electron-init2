@@ -208,8 +208,8 @@ class App extends Component {
   openWebSite(img) {
 
 
-    shell.openExternal(img);
-    // ipcRenderer.send('webSiteData', img);
+    // shell.openExternal(img);
+    ipcRenderer.send('webSiteData', img);
   }
 
   addAddress(e) {

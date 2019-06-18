@@ -4,6 +4,7 @@
 
 const electron = require('electron');
 const ipcMain = electron.ipcMain;
+const shell = electron.shell;
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Tray = electron.Tray;
@@ -99,6 +100,43 @@ function createWindow() {
   // })
 
   // notification.show();
+
+
+
+
+  webSiteWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    // 设置保存路径,使Electron不提示保存对话框。
+    // item.setSavePath('/tmp/save.pdf')
+
+    console.log(item, 'item');
+    console.log(webContents, 'webContents');
+
+
+
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        console.log('Download is interrupted but can be resumed')
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log('Download is paused')
+        } else {
+          console.log(`Received bytes: ${item.getReceivedBytes()}`)
+        }
+      }
+    })
+    item.once('done', (event, state) => {
+      if (state === 'completed') {
+        console.log(item.getSavePath(), '####')
+
+        // .webContents.executeJavaScript("window.print()");
+
+        shell.openItem(item.getSavePath());
+        console.log('Download successfully')
+      } else {
+        console.log(`Download failed: ${state}`)
+      }
+    })
+  });
 
 
   mainWindow.on('minimize', () => {
@@ -293,7 +331,7 @@ function createWindow() {
     event.preventDefault();
     console.log('testtest');
     //主窗口显示隐藏切换
-    //xxxx
+
 
     mainWindow.show();
     // mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
@@ -335,7 +373,6 @@ app.on('window-all-closed', () => {
 
 
 
-  //xxxxxxx
   app.quit();
   if (process.platform !== 'darwin') {
     console.log('window close');
@@ -401,7 +438,7 @@ ipcMain.on('webSiteData', (event, webSiteData) => {
 // 主窗口初始数据，触
 ipcMain.on('app-getData', (event) => {
   data_db.find({}, function (err, docs) {
-    //xxxxxxxx
+
     console.log(docs, 'docs****');
 
     console.log(docs == false);
