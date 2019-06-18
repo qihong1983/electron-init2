@@ -59,6 +59,8 @@ const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
 
+const shell = window.electron.shell;
+
 //uuid
 const uuidv1 = require('uuid/v1');
 
@@ -206,7 +208,8 @@ class App extends Component {
   openWebSite(img) {
 
 
-    ipcRenderer.send('webSiteData', img);
+    shell.openExternal(img);
+    // ipcRenderer.send('webSiteData', img);
   }
 
   addAddress(e) {
