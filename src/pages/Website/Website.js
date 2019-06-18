@@ -51,21 +51,22 @@ class Website extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            websiteUrl: ''
+            websiteUrl: '',
+            iFrameHeight: '0px'
         }
     }
 
     componentDidMount() {
         const electron = window.electron;
 
-
         const ipcRenderer = window.electron.ipcRenderer;
 
         ipcRenderer.on('website', (event, arg) => {
-            console.log(event, arg, '111111');
+
+
             this.setState({
                 websiteUrl: arg,
-                iFrameHeight: '0px'
+                iFrameHeight: window.innerHeight + 'px'
             });
         })
     }
@@ -133,18 +134,22 @@ class Website extends Component {
                         console.log(obj, 'obj');
 
                         console.log(obj.contentWindow.window, '******');
-
+                        console.log(window.outerHeight, '####');
                         // debugger;
                         // this.setState({
-                        //     "iFrameHeight":  obj.contentWindow.document.body.scrollHeight + 'px'
+                        //     "iFrameHeight": obj.contentWindow.document.body.scrollHeight + 'px'
                         // });
 
+                        this.setState({
+                            "iFrameHeight": window.innerHeight + 'px'
+                        });
 
                         // width={window.document.body.offsetWidth - 500 + 'px'}
                     }}
                     ref="iframe"
                     src={this.state.websiteUrl}
-                    height={window.document.body.offsetWidth + 'px'}
+                    // height={window.document.body.offsetHeight + 'px'}
+                    height={this.state.iFrameHeight}
                     scrolling="yes"
                     frameBorder="0"
                 />

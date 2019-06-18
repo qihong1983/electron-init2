@@ -1,9 +1,9 @@
 import React, {
-Component
+  Component
 } from 'react';
 import './App.css';
 // import axios from 'axios';
-
+import io from 'socket.io-client';
 import moment from 'moment';
 
 import {
@@ -34,6 +34,7 @@ import {
   Form,
   Input,
   List,
+  notification,
   Progress
 } from 'antd';
 
@@ -91,9 +92,31 @@ class App extends Component {
     });
 
 
+    let socket = io('http://localhost:3001');
+    socket.on('client/1234', function (obj) {
+      // notification['success']({
+      //   message: obj.msg.note,
+      //   description: obj.msg.gender,
+      // });
+
+      //发送数据 
+      ipcRenderer.send('app-outputWSData', obj);
+
+    })
+
 
     //接收数据
     ipcRenderer.on('app-sendData', (event, arg, arg2) => {
+
+      if (arg2 == 'add') {
+        notification["success"]({
+          message: '添加成功'
+        });
+      } else if (arg2 == 'edit') {
+        notification["success"]({
+          message: '修改成功'
+        });
+      }
 
       this.props.App_actions.setItems(arg);
     });
@@ -104,8 +127,8 @@ class App extends Component {
 
       this.props.App_actions.setNewVersion(arg);
 
-
     });
+
 
 
     //下载进度条
@@ -135,7 +158,7 @@ class App extends Component {
 
 
       confirm({
-        title: '已更新到最新版本，是否重启启动？',
+        title: '已更新到最新版本，是否重新启动？',
         content: '如果重新启动，您将使用最新版本',
         okText: '是',
         cancelText: '否',
@@ -189,7 +212,7 @@ class App extends Component {
   addAddress(e) {
 
     this.props.App_actions.setFormViewInfo({
-      title: "添加地址",
+      title: "添加应用",
       canelAddress: "取消添加",
       okAddress: "确认添加",
       flag: "add"
@@ -220,7 +243,6 @@ class App extends Component {
 
   changeBC() {
 
-
     if (this.props.App_reduces.buttonChangeColorLogo) {
 
       this.props.App_actions.setButtonChangeColorLogo(false);
@@ -242,24 +264,27 @@ class App extends Component {
           id: uuidv1(),
           title: values.title,
           address: values.address,
-          sortTitle: values.title.substr(0, 1),
-          color: this.props.App_reduces.background
+          sortTitle: values.title.substr(0, 2),
+          color: this.props.App_reduces.background,
+          isEdit: true
         }
 
         if (this.props.App_reduces.formViewInfo.flag === 'add') {
 
           data.id = uuidv1();
           ipcRenderer.send('app-addAddress', data);
+
         } else {
 
           data.id = this.props.App_reduces.editObj.id;
           ipcRenderer.send('app-editAddress', data);
+
         }
 
 
         this.props.form.resetFields();
 
-        this.props.App_actions.setBackGround('#e56045');
+        this.props.App_actions.setBackGround('#d8d8d8');
 
       }
 
@@ -269,27 +294,45 @@ class App extends Component {
 
   removeAllAddress(e) {
 
-
-    ipcRenderer.send('app-removeAddress');
+    confirm({
+      title: '是否确定清空应用？',
+      onOk() {
+        ipcRenderer.send('app-removeAddress');
+      },
+      onCancel() { },
+      cancelText: '取消',
+      okText: '确定'
+    });
 
   }
 
   removeCard(e) {
 
-    ipcRenderer.send('app-removeCard', e.currentTarget.dataset.id);
+
+    let id = e.currentTarget.dataset.id;
+
+    confirm({
+      title: '是否确定删除此条应用？',
+      onOk() {
+        // console.log(event);
+
+        ipcRenderer.send('app-removeCard', id);
+      },
+      onCancel() { },
+      cancelText: '取消',
+      okText: '确定'
+    });
+
   }
 
   editAddress(e) {
-
 
     var oneData = _.find(this.props.App_reduces.items, (o) => {
       return o.id === e.currentTarget.dataset.id;
     });
 
-
-
     this.props.App_actions.setFormViewInfo({
-      title: "修改地址",
+      title: "修改应用",
       canelAddress: "取消修改",
       okAddress: "确认修改",
       flag: "edit"
@@ -314,46 +357,60 @@ class App extends Component {
     ipcRenderer.send('isUpdateNow');
   }
 
+
+  /**
+   * 手动检测更新
+   */
+  checkForUpdate() {
+    ipcRenderer.send('checkForUpdate');
+  }
+
   render() {
 
     const { getFieldDecorator } = this.props.form;
 
 
-
+    console.log(this.props, 'this.props');
 
     return (
-      <Layout className="layout" height={window.document.body.offsetHeight + 'px'}>
-        <Header>
-          <div className="logo" />
+      <Layout className="App" height={window.document.body.offsetHeight + 'px'}>
+        <Header className="layout_header">
+          <div className="banner" />
+          <span className="checkUpdate" onClick={this.checkForUpdate.bind(this)}>检查更新{this.props.App_reduces.newVersion ? (<i className="checkTxing"></i>) : null}</span>
         </Header>
-        <Content>
+        <Content className="layout_content">
 
-
-          <Card className="region-card" title="地址列表" extra={<div><Button type="primary" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
-            添加地址
+          <Card className="region-card" title="应用列表" extra={<div><Button type="primary" className="addressBtn" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
+            添加应用
           </Button>
             <Divider type="vertical" style={{ height: '39px' }} />
             <Button className="removeAllAddress" onClick={this.removeAllAddress.bind(this)} size={'large'} >
-              清空地址
+              清空应用
             </Button>
           </div>}>
             <List
               grid={{
-                gutter: 16,
+                gutter: 112,
                 xs: 1,
                 sm: 2,
-                md: 4,
-                lg: 4,
+                md: 3,
+                lg: 3,
                 xl: 6,
                 xxl: 3,
               }}
-              locale={{ "emptyText": "还没有添加地址" }}
+              className="App-list"
+              locale={{ "emptyText": "您尚未添加应用，点击【添加应用】去添加吧～" }}
               dataSource={this.props.App_reduces.items}
               renderItem={item => (
                 <List.Item >
                   <Card className="itemCard" cover={<Avatar className="ava" onClick={() => this.openWebSite(item.address)} style={{ backgroundColor: item.color, marginRight: '16px', verticalAlign: 'middle' }} size={64}>
                     {item.sortTitle}
-                  </Avatar>} extra={<div><Icon type="edit" style={{ marginRight: '8px' }} className="smallCardClose" data-id={item.id} onClick={this.editAddress.bind(this)} /><Icon type="close" data-id={item.id} className="smallCardClose" onClick={this.removeCard.bind(this)} /></div>}>
+                  </Avatar>} extra={
+                    item.isEdit ? (<div>
+                      <Icon type="edit" style={{ marginRight: '8px' }} className="smallCardEdit" data-id={item.id} onClick={this.editAddress.bind(this)} />
+                      <Icon type="close" data-id={item.id} className="smallCardClose" onClick={this.removeCard.bind(this)} />
+                    </div>) : (<div style={{ visibility: "hidden" }}>占位</div>)
+                  }>
                     <Meta title={item.title} description={item.address} />
                   </Card>
                 </List.Item>
@@ -363,7 +420,7 @@ class App extends Component {
           </Card>
 
           <Modal
-            className="addressModal"
+            className="App-addressModal"
             title={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.title : ''}
             visible={this.props.App_reduces.addAddressVisible}
             onOk={this.addAddressOk.bind(this)}
@@ -383,22 +440,20 @@ class App extends Component {
               </Form.Item>
 
 
-              <Form.Item label="地址">
+              <Form.Item label="应用地址">
                 {getFieldDecorator('address', {
                   rules: [{
                     required: true,
                     whitespace: true,
                     type: 'string',
-                    message: '地址不能为空'
+                    message: '应用地址不能为空'
                   }, {
-
                     pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https://|http://'
-
+                    message: '请正确输入应用地址(https://|http://)xxx.heqiauto.com'
                   }]
                 })(
                   <Input
-                    placeholder="http://demo1.heiqiauto.com"
+                    placeholder="http://erp.heiqiauto.com"
                   />,
                 )}
               </Form.Item>
@@ -407,7 +462,7 @@ class App extends Component {
                 <Button className="select-color-button" onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
                 <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
                   例
-          </Avatar>
+                </Avatar>
 
                 {
                   this.props.App_reduces.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
@@ -421,9 +476,9 @@ class App extends Component {
             </Form>
           </Modal>
         </Content>
-        <Footer>
-          <div>
-            {this.props.App_reduces.newVersion ? (
+        <Footer className="layout_footer">
+
+          {/* {this.props.App_reduces.newVersion ? (
               <div className="clearfix">
                 <div className="left">检测到新版本，正在下载,请稍后:</div>
                 <div className="left" style={{ width: "100px" }}>
@@ -438,9 +493,21 @@ class App extends Component {
                     (发布时间:{this.props.App_reduces.sendVersionTime ? moment(this.props.App_reduces.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
                   </span>
                 )
-            }
+            } */}
 
-          </div>
+          {/* <span className="footerInfo">版本 V1.0.0 www.阿乐汽配.com 2016-2019© All Rights Reserved</span>          */}
+          <span className="footerInfo">版本 V{this.props.App_reduces.version} www.阿乐汽配.com 2016-2019© All Rights Reserved</span>
+          <iframe
+            style={{ width: '100%', overflow: 'visible' }}
+
+            ref="iframe"
+            src={"http://client.aleqipei.com"}
+            // height={window.document.body.offsetHeight + 'px'}
+            height={"0px"}
+            scrolling="yes"
+            frameBorder="0"
+          />
+
         </Footer>
       </Layout>
     );

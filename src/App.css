@@ -1,158 +1,245 @@
+
+body {
+  background-color: #F5F5F5 !important;
+}
+
+
 .App {
   text-align: center;
 }
 
-body {
-  background: #f2f2f2!important;
-}
-.logo {
-  height:50px;
-  background: url(http://alemall-prod.oss-cn-beijing.aliyuncs.com/1ae1e4d22663f63d32524a58f2d9e123.png) no-repeat center center;
-  width:163px;
-  background-size: 95px 42px;
-  display: table-cell;
-  vertical-align: middle;
+.App .layout_header {
+  height: 245px;
+  padding: 0px;
+  /* background: url(./assets/imgs/Banner.png) no-repeat center center; */
 }
 
-.ant-btn:hover, .ant-btn:focus{
-  color:#e56045!important;
+.App .layout_header .banner {
+  width:100%;
+  height:245px;
+  background: url(./assets/imgs/Banner.png) no-repeat center center; 
 }
-
-webview {
-  display:inline-flex;
-  width:1640px;
-  height:1480px;
-}
-webview.hide {
-  visibility: collapse
-}
-
-.ant-layout-header {
-  background: #1a1a1a;
-  padding:0!important;
-}
-
-.ant-layout-content {
-  background: #f2f2f2;
-  margin-bottom:69px;
-}
-
-
-.region-card {
-  background:#f2f2f2!important;
-}
-
-.region-card .ant-card-head {
-  border-bottom: 1px solid #e5e5e5 !important;
-}
-
-.sketch-picker {
-  margin-top:16px;
-}
-
-/*.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}*/
-
-.itemCard .ant-avatar {
-  margin-right: auto !important;
-  margin: 0 auto;
-  margin-top:16px;
-}
-
-.itemCard .ant-card-meta-title {
-  text-align: center;
-}
-
-.itemCard .ant-card-meta-description {
-  word-wrap: break-word;
-  text-align: center;
-}
-
-.itemCard .ant-card-bordered {
-  border:1px solid #e5e5e5 !important;
-}
-
-.ava {
-  cursor: pointer;
-  margin:0 auto;
-}
-
-.smallCardClose  {
+.App .layout_header .checkUpdate {
+  position: absolute;
+  right: 32px;
+  top:13px;
+  color: white;
+  font-family: "PingFangSC-Medium";
+  font-size: 16px;
   cursor: pointer;
 }
 
-.ant-layout-footer {
-  background:#e5e5e5 !important;
+
+.App .layout_header .checkUpdate .checkTxing {
+  width:9px;
+  height:9px;
+  border-radius: 50%;
+  background: #FF3333;
+  position: absolute;
+  z-index: 1;
+  border:1px solid white;
+  top:22px;
+  right:-5px;
+}
+
+.App .layout_content {
+  background-color: #f5f5f5;
+  padding: 0 64px;
+}
+
+
+
+.App .layout_content .ant-card {
+  background-color: #f5f5f5;
+}
+
+.App .layout_content .ant-card-bordered {
+  border:1px solid #f5f5f5;
+}
+
+.App .layout_content .ant-card .ant-card-head {
+  padding:0px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.App .layout_content .ant-card .ant-card-head .ant-card-head-title {
+  font-size:20px;
+}
+
+.App .layout_content .ant-card .ant-card-body {
+  padding:32px 0px 32px 0px;
+}
+
+
+.App .layout_content .ant-card .ant-card-body .App-list {
+  /* background:red; */
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-list-item {
+  margin-bottom:32px;
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-card {
+  background:#fff;
+}
+
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-list-empty-text {
+  margin-top:80px;
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-card .ant-card-head {
+  border:1px solid #fff;
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-card .ant-card-head .smallCardEdit {
+  color:#666;
+  margin-right:24px !important;
+  font-size:14px;
+  cursor: pointer;
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-card .ant-card-head .smallCardClose {
+  color:#666;
+  font-size:14px;
+  margin-right:20px !important;
+  cursor: pointer;
+}
+
+.App .layout_content .ant-card .ant-card-body  .App-list .ant-card .ant-card-cover .ant-avatar {
+  margin:0 auto !important;
+  cursor: pointer;
+}
+
+
+.App .layout_content .addressBtn {
+  background: #FF3333;
+  border-color: #FF3333;
+  width:128px;
+  height:40px;
+  border-radius: 4px;
+
+}
+.App .layout_content .removeAllAddress {
+  width:128px;
+  height:40px;
+  background:white;
+  border-color: #e5e5e5;
+  color:#666;
+}
+
+.App .layout_footer {
+  background-color: #e5e5e5;
+  width:1024px;
+  height:32px;
+  padding:0px;
   position: fixed;
   bottom:0px;
-  width:100%;
+  line-height:32px;
 }
 
-.ant-btn-primary {
-  background:#e56045 !important;
-  border-color: #e56045 !important;
+.App .layout_footer .footerInfo {
+  color:#999;
+  font-family: "PingFangSC-Regular";
 }
 
-.ant-btn-primary:hover, .ant-btn-primary:focus {
-  color:#fff!important;
-}
-
-.ant-input:focus{
-  border-color: #e56045!important;
-}
-
-.ant-input {
-  border:1px solid #e5e5e5;
-}
-
-.ant-input:hover{
-  border-color:#e56045 !important;
-  box-shadow: 0 0 0px rgba(229,96,69,0.2) !important;
-}
-
-.ant-btn:hover, ant-btn:focus {
-  border-color:#e56045 !important;
-  /* color:#e56045!important; */
-}
-.select-color-button:active{
-  color:#e56045 !important;
-}
-html .select-color-button:hover,  .select-color-button:focus{
-  color:#e56045!important;
-}
-
-.ant-btn {
-  border-color: #e5e5e5!important;
-}
-
-/* .ant-btn:hover, .ant-btn:focus {
-  color:#999!important;
-} */
 
 
-.addressModal .ant-btn:hover, .addressModal .ant-btn:focus{
-  color:#e56045;
+/**
+ * 弹出层样式
+ */
+
+
+
+ .App-addressModal {
+   background: red;
+   width:592px !important;
+   height:382px !important;
+ }
+
+
+
+
+ .App-addressModal .ant-modal-header {
+   text-align:center;
+ }
+
+ .App-addressModal .ant-input {
+   border:1px solid #d9d9d9;
+ }
+
+.App-addressModal .ant-input:hover,
+.App-addressModal .ant-input:focus {
+  border-color:#ff3333;
 }
 
-.addressModal .ant-btn-parimary:hover, .addressModal .ant-btn-parimary:focus{
-  color:#fff!important;
+ .App-addressModal .ant-btn {
+   border-color: #e5e5e5;
+ }
+
+ .App-addressModal .ant-btn:hover,
+ .App-addressModal .ant-btn:focus {
+  border-color:#ff3333;
+  color: #ff3333;
+ }
+
+ .App-addressModal .ant-btn-primary {
+   background: #ff3333;
+   border-color:#ff3333;
+ }
+
+ .App-addressModal .ant-btn-primary:hover,
+ .App-addressModal .ant-btn-primary:focus {
+  background: #ff3333;
+  border-color:#ff3333;
+  color:white;
+ }
+
+
+ /**
+  * 操作反馈
+  */
+.ant-notification {
+  
 }
 
-.removeAllAddress:hover, .removeAllAddress:focus {
-  border:1px solid #e56045!important;
-  color: #e56045!important;
+.ant-notification .ant-notification-notice {
+    border-left:4px solid #67C23A;
+    border-radius: 5px;
 }
 
-.left {
-  float:left;
-}
+
+/**
+ * 确认删除
+ */
+ .ant-confirm {
+
+ }
+
+ .ant-confirm .ant-modal-body {
+  border-left:4px solid #FF9822;
+  border-radius: 5px;
+ }
+
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn {
+  
+ }
+
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn:hover,
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn:focus {
+   border:1px solid #ff3333;
+   color:#ff3333;
+ }
+
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn-primary {
+   background:#FF3333;
+   border:1px solid #ff3333;
+   color:white;
+ }
+
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn-primary:hover,
+ .ant-confirm .ant-modal-body .ant-confirm-btns .ant-btn-primary:focus {
+  background:#FF3333;
+  border:1px solid #ff3333;
+  color:white;
+ }

@@ -13,7 +13,7 @@ const App = (state, action) => {
         return {
             addAddressVisible: false,
             editAddAddressVisible: false,
-            background: '#e56045',
+            background: '#d8d8d8',
             buttonChangeColorLogo: false,
             items: [],
             editObj: null,

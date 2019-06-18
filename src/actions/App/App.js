@@ -38,38 +38,46 @@ const addAddressVisible = (data) => {
  * @param {String} color
  */
 
- const setBackGround = (data) => {
-    return function(dispatch) {
-        
+const setBackGround = (data) => {
+    return function (dispatch) {
+
         dispatch({
             type: "APP_BACKGROUND",
             payload: data
         })
     }
- }
+}
 
- /**
-  * 不知道这个是什么，不用代码里用到了
-  * @method buttonChangeColorLogo
-  * @param {Boolean} data
-  */
- const setButtonChangeColorLogo = (data) => {
+/**
+ * 不知道这个是什么，不用代码里用到了
+ * @method buttonChangeColorLogo
+ * @param {Boolean} data
+ */
+const setButtonChangeColorLogo = (data) => {
     return function (dispatch) {
         dispatch({
             type: "APP_BUTTONCHANGCOLORLOGO",
             payload: data
         })
     }
- }
+}
 
- /**
-  * 设置列表
-  * @method setItems
-  * @param {Array} items
-  */
+/**
+ * 设置列表
+ * @method setItems
+ * @param {Array} items
+ */
 
-const setItems =(items) => {
+const setItems = (items) => {
     return function (dispatch) {
+
+        items.forEach((v, k) => {
+            if (v.isEdit != false) {
+                v.isEdit = true;
+            }
+        });
+
+        console.log(items, 'items');
         dispatch({
             type: "APP_ITEMS",
             payload: items
@@ -84,23 +92,23 @@ const setItems =(items) => {
  * @param {Object} data
  */
 
- const setEditObj = (data) => {
+const setEditObj = (data) => {
     return function (dispatch) {
         dispatch({
             type: "APP_EDITOBJ",
             payload: data
         })
     }
- }
+}
 
- /**
-  * 设置版本
-  * @method setVersion
-  * @param {String} data
-  */
+/**
+ * 设置版本
+ * @method setVersion
+ * @param {String} data
+ */
 
 const setVersion = (data) => {
-    return function(dispatch) {
+    return function (dispatch) {
         dispatch({
             type: "APP_VERSION",
             payload: data
@@ -114,21 +122,21 @@ const setVersion = (data) => {
  * @param {String} data
  */
 
- const sendVersionTime = (data) => {
+const sendVersionTime = (data) => {
     return function (dispatch) {
         dispatch({
             type: "APP_SENDVERSIONTIME",
             payload: data
         })
     }
- }
+}
 
 
- /**
-  * 是否发现新版本
-  * @method setNewVersion
-  * @param {Boolean} data
-  */
+/**
+ * 是否发现新版本
+ * @method setNewVersion
+ * @param {Boolean} data
+ */
 
 const setNewVersion = (data) => {
     return function (dispatch) {
@@ -145,7 +153,7 @@ const setNewVersion = (data) => {
  * @method setPercent
  * @param {Number} data
  */
-const setPercent =(data) => {
+const setPercent = (data) => {
     return function (dispatch) {
         dispatch({
             type: "APP_PERCENT",
@@ -161,22 +169,22 @@ const setPercent =(data) => {
  * @param {Boolean} data
  */
 
- const setResetUpdate = (data) => {
+const setResetUpdate = (data) => {
     return function (dispatch) {
         dispatch({
             type: "APP_RESETUPDATE",
             payload: data
         })
     }
- }
+}
 
 
- /**
-  * 表单信息
-  * 
-  * @method setFormViewInfo
-  * @param {Object} data
-  */
+/**
+ * 表单信息
+ * 
+ * @method setFormViewInfo
+ * @param {Object} data
+ */
 const setFormViewInfo = (data) => {
     return function (dispatch) {
         dispatch({
