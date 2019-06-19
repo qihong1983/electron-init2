@@ -131,6 +131,7 @@ class Website extends Component {
                     onLoad={() => {
                         const obj = this.refs.iframe;
 
+                        console.log(this);
                         console.log(obj, 'obj');
 
                         console.log(obj.contentWindow.window, '******');

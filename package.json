@@ -1,9 +1,10 @@
 {
   "name": "heqi2",
-  "version": "1.0.188",
+  "version": "1.0.193",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
+    "auto-launch": "~5.0.5",
     "concurrently": "~4.0.1",
     "electron-is-dev": "~1.0.1",
     "electron-log": "~3.0.6",
@@ -80,14 +81,7 @@
     ],
     "win": {
       "icon": "./icon.ico",
-      "artifactName": "${productName}_setup_${version}.${ext}",
-      "target": "nsis-web"
-    },
-    "nsisWeb": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true,
-      "differentialPackage": true
+      "artifactName": "${productName}_setup_${version}.${ext}"
     }
   }
 }

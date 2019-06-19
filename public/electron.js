@@ -35,6 +35,14 @@ var Jimp = require("jimp");
 
 var QrCode = require('qrcode-reader');
 
+var AutoLaunch = require('auto-launch');
+var aleqipei = new AutoLaunch({
+  name: 'aleqipei',
+  //path: '/Applications/Minecraft.app',
+});
+
+app.dock.hide();
+
 /**
  * 页面列表数据库配置
  */
@@ -87,7 +95,7 @@ function createWindow() {
   //调试
   if (isDev) {
     mainWindow.webContents.openDevTools();
-    // webSiteWindow.webContents.openDevTools();
+    webSiteWindow.webContents.openDevTools();
   }
   // console.log(Notification.isSupported(), '是否支持桌面');
 
