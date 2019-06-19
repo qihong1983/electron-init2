@@ -1,22 +1,14 @@
 import React, {
   Component
 } from 'react';
-import logo from './logo.svg';
 import './App.css';
 // import axios from 'axios';
-import {
-  Link,
-  IndexLink
-} from 'react-router';
-
-
+import io from 'socket.io-client';
 import moment from 'moment';
-
 
 import {
   connect
 } from 'react-redux';
-
 
 import {
   bindActionCreators
@@ -25,15 +17,14 @@ import {
 import { SketchPicker } from 'react-color';
 
 
-import * as actionCreators from './actions/userList/list';
+import * as actionCreators from './actions/App/App';
 
 import _ from 'lodash';
 
-import QrcodeDecoder from 'qrcode-decoder';
+
+
 import {
   Layout,
-  Menu,
-  Breadcrumb,
   Icon,
   Card,
   Avatar,
@@ -42,9 +33,8 @@ import {
   Modal,
   Form,
   Input,
-  Row,
-  Col,
   List,
+  notification,
   Progress
 } from 'antd';
 
@@ -61,150 +51,29 @@ const confirm = Modal.confirm;
 
 const { Meta } = Card;
 
-const electron = window.electron;
 
 const ipcRenderer = window.electron.ipcRenderer;
 
-const remote = window.electron.remote;
 
 const EMenu = window.electron.remote.Menu;
 
 const EMenuItem = window.electron.remote.MenuItem;
 
-const path = require('path');
-
-var fs = require("fs")
-
-const app = window.electron.app;
-
-const os = require('os');
-
-var desktopCapturer = window.electron.desktopCapturer;
-
-const electronScreen = window.electron.screen;
-
-
-
-
-function determineScreenShotSize () {
-    const screenSize = electronScreen.getPrimaryDisplay().workAreaSize
-    const maxDimension = Math.max(screenSize.width, screenSize.height)
-    return {
-      width: maxDimension * window.devicePixelRatio,
-      height: maxDimension * window.devicePixelRatio
-    }
-  }
-
-const thumbSize = determineScreenShotSize();
-desktopCapturer.getSources({ types: ['window', 'screen'],thumbnailSize: thumbSize }).then(async sources => {
-  for (const source of sources) {
-
-    console.log(sources, 'sources');
-
-    if (source.name === 'Entire screen') {
-
-      console.log(os);
-      const screenshotPath = path.join(os.tmpdir(), 'screenshot.png');
-      console.log(os.tmpdir(), 'os.tmpdir()');
-      console.log(fs);
-
-      console.log(source.thumbnail, '*****####***');
-      console.log(source.thumbnail.toPNG(), '*****####***');
-
-      ipcRenderer.send('qrcodeImg',source.thumbnail.toPNG());
-      
-
-
-      // try {
-      //   const stream = await navigator.mediaDevices.getUserMedia({
-      //     audio: false,
-      //     video: {
-      //       mandatory: {
-      //         chromeMediaSource: 'desktop',
-      //         chromeMediaSourceId: source.id,
-      //         minWidth: 1280,
-      //         maxWidth: 1280,
-      //         minHeight: 720,
-      //         maxHeight: 720
-      //       }
-      //     }
-      //   })
-      //   handleStream(stream)
-      // } catch (e) {
-      //   handleError(e)
-      // }
-      return
-    }
-  }
-});
-
-
-//接收图片
-ipcRenderer.on('app-getImg', (event, arg) => {
-
-  console.log(arg, 'argarg');
-  // var qr = new QrcodeDecoder();
-  // qr.decodeFromImage("http://i6.hexunimg.cn/2014-01-15/161426168.jpg").then((res) => {
-  //   console.log(res, '为什么');
-  // });
-
-  var qr = new QrcodeDecoder();
-  qr.decodeFromImage(arg).then((res) => {
-    console.log(res);
-  });
-});
-
-function handleStream(stream) {
-  console.log(stream, 'stream');
-  const video = document.querySelector('video');
-  video.srcObject = stream;
-
-  console.log(video.srcObject);
-
-  video.onloadedmetadata = (e) => video.play();
-
-
-}
-
-function handleError(e) {
-  console.log(e)
-}
-
-
-
-
+const shell = window.electron.shell;
 
 //uuid
 const uuidv1 = require('uuid/v1');
 
-
-
-
-
 class App extends Component {
-
 
   constructor(props) {
     super(props);
     this.state = {
-      addAddressVisible: false,
-      editAddAddressVisible: false,
-      background: '#e56045',
-      buttonChangeColorLogo: false,
-      items: [],
-      editObj: null,
-      url: null,
-      version: '',
-      sendVersionTime: '',
-      newVersion: false,
-      percent: 0,
-      resetUpdate: false
+      url: null
     }
   }
 
   componentDidMount() {
-
-
 
 
     //检测更新 
@@ -216,69 +85,70 @@ class App extends Component {
 
     //接收版本和时间
     ipcRenderer.on('app-getVersionTime', (event, arg, arg2) => {
-      console.log(arg, 'arg');
 
-      console.log(arg2, 'arg2');
 
-      this.setState({
-        version: arg,
-        sendVersionTime: arg2
-      });
+
+      this.props.App_actions.setVersion(arg);
+      this.props.App_actions.sendVersionTime(arg2);
+
     });
 
+
+    let socket = io('http://localhost:3001');
+    socket.on('client/1234', function (obj) {
+      // notification['success']({
+      //   message: obj.msg.note,
+      //   description: obj.msg.gender,
+      // });
+
+      //发送数据 
+      ipcRenderer.send('app-outputWSData', obj);
+
+    })
 
 
     //接收数据
     ipcRenderer.on('app-sendData', (event, arg, arg2) => {
-      this.setState({
-        items: arg,
-        url: arg2
-      })
+
+      if (arg2 == 'add') {
+        notification["success"]({
+          message: '添加成功'
+        });
+      } else if (arg2 == 'edit') {
+        notification["success"]({
+          message: '修改成功'
+        });
+      }
+
+      this.props.App_actions.setItems(arg);
     });
 
 
     //发现新版本
     ipcRenderer.on('app-getNewVersion', (event, arg) => {
 
-      console.log('检测到新版本了吗');
-      console.log(arg, '****');
+      this.props.App_actions.setNewVersion(arg);
 
-
-
-      this.setState({
-        newVersion: arg
-      });
     });
+
 
 
     //下载进度条
     ipcRenderer.on('app-downloadProgress', (event, arg) => {
 
-      console.log(arg, 'argargarg');
       if (arg.percent >= 100) {
-        // confirm({
-        //   title: '已更新到最新版本，是否重启启动？',
-        //   content: '如果重新启动，您将使用最新版本',
-        //   okText: '是',
-        //   cancelText: '否',
-        //   onOk() {
-        //     ipcRenderer.send('isUpdateNow');
-        //   },
-        //   onCancel() { },
-        // });
 
+        this.props.App_actions.setNewVersion(false);
 
-        this.setState({
-          percent: parseInt(arg.percent, 10),
-          newVersion: false,
-          resetUpdate: true
-        })
+        this.props.App_actions.setPercent(parseInt(arg.percent, 10));
+
+        this.props.App_actions.setResetUpdate(true);
+
       } else {
-        this.setState({
-          percent: parseInt(arg.percent, 10)
-        })
-      }
 
+        this.props.App_actions.setPercent(parseInt(arg.percent, 10));
+
+      }
 
     });
 
@@ -288,10 +158,9 @@ class App extends Component {
     ipcRenderer.on('app-updateDownload', (event, arg) => {
 
 
-      console.log('下载完成了出现这个');
 
       confirm({
-        title: '已更新到最新版本，是否重启启动？',
+        title: '已更新到最新版本，是否重新启动？',
         content: '如果重新启动，您将使用最新版本',
         okText: '是',
         cancelText: '否',
@@ -302,116 +171,31 @@ class App extends Component {
       });
 
 
-      this.setState({
-        percent: 100,
-        newVersion: false,
-        resetUpdate: true
-      })
+
+      this.props.App_actions.setNewVersion(false);
+
+
+      this.props.App_actions.setPercent(100);
+      this.props.App_actions.setResetUpdate(true);
+
 
 
 
     });
 
-    // app-updateDownload'
 
     this.initMenu();
-    this.contextmenuInit();
   }
-
-
 
 
   clickHandle = (img) => {
-
-
     ipcRenderer.send('toggle-image', img);
-
   }
 
   initMenu = () => {
-
-
-    // const menu = EMenu.buildFromTemplate([{
-    //   label: "File",
-    //   submenu: [{
-    //     label: "New Window"
-    //   }, {
-    //     label: "Settings",
-    //     accelerator: "CmdOrCtrl+,",
-    //     click: () => {
-
-
-    //       ipcRenderer.send("toggle-settings");
-    //     }
-    //   }, {
-    //     type: "separator"
-    //   }, {
-    //     label: "Quit",
-    //     accelerator: "CmdOrCtrl+Q"
-    //   }]
-    // }, {
-    //   label: "Edit",
-    //   submenu: [{
-    //     label: "Menu Item 1"
-    //   }, {
-    //     label: "Menu Item 2"
-    //   }, {
-    //     label: "Menu Item 3"
-    //   }]
-    // }]);
-    // console.log(EMenu);
     EMenu.setApplicationMenu(null);
     // EMenu.setApplicationMenu(menu);
 
-  }
-
-  contextmenuInit = () => {
-
-    const electron = window.electron;
-
-
-    const ipcRenderer = window.electron.ipcRenderer;
-
-
-    const remote = window.electron.remote;
-    const Menu = window.electron.remote.Menu;
-    const MenuItem = window.electron.remote.MenuItem;
-
-
-    const menu = new EMenu();
-    menu.append(new EMenuItem({
-      label: '右键菜单一',
-      click() {
-        console.log('item 1 clicked')
-      }
-    }))
-
-    menu.append(new EMenuItem({
-      label: '右键菜单二',
-    }))
-    menu.append(new EMenuItem({
-      type: 'separator'
-    }))
-
-
-    menu.append(new EMenuItem({
-      label: '右键复选菜单二',
-      type: 'checkbox',
-      checked: true
-    }))
-
-    menu.append(new EMenuItem({
-      label: '右键复选菜单三',
-      type: 'checkbox',
-      checked: true
-    }))
-
-    window.addEventListener('contextmenu', (e) => {
-      e.preventDefault()
-      // menu.popup({
-      //   window: remote.getCurrentWindow()
-      // })
-    }, false)
   }
 
   closeApp() {
@@ -424,46 +208,50 @@ class App extends Component {
   openWebSite(img) {
 
 
+    // shell.openExternal(img);
     ipcRenderer.send('webSiteData', img);
   }
 
   addAddress(e) {
-    this.setState({
-      addAddressVisible: true
+
+    this.props.App_actions.setFormViewInfo({
+      title: "添加应用",
+      canelAddress: "取消添加",
+      okAddress: "确认添加",
+      flag: "add"
     });
+
+    this.props.App_actions.addAddressVisible(true);
+
   }
 
   addAddressOk(e) {
 
-    console.log(this.refs.addAddress);
-
-
     this.refs.addAddress.props.onSubmit();
-
 
   }
 
   addAddressCancel(e) {
 
     this.props.form.resetFields();
-    this.setState({
-      addAddressVisible: false
-    });
+
+    this.props.App_actions.addAddressVisible(false);
+
   }
 
   handleChangeComplete = (color) => {
-    this.setState({ background: color.hex });
+
+    this.props.App_actions.setBackGround(color.hex);
   };
 
   changeBC() {
-    if (this.state.buttonChangeColorLogo) {
-      this.setState({
-        buttonChangeColorLogo: false
-      })
+
+    if (this.props.App_reduces.buttonChangeColorLogo) {
+
+      this.props.App_actions.setButtonChangeColorLogo(false);
     } else {
-      this.setState({
-        buttonChangeColorLogo: true
-      })
+      this.props.App_actions.setButtonChangeColorLogo(true);
+
     }
   }
 
@@ -472,53 +260,36 @@ class App extends Component {
     // e.preventDefault();
     this.props.form.validateFields((err, values) => {
 
-      //添加地址
-      if (values.title && values.address && !err.address) {
-
-
-        this.setState({
-          addAddressVisible: false
-        });
+      if (!err) {
+        this.props.App_actions.addAddressVisible(false);
 
         var data = {
           id: uuidv1(),
           title: values.title,
           address: values.address,
-          sortTitle: values.title.substr(0, 1),
-          color: this.state.background
+          sortTitle: values.title.substr(0, 2),
+          color: this.props.App_reduces.background,
+          isEdit: true
         }
 
-        ipcRenderer.send('app-addAddress', data);
+        if (this.props.App_reduces.formViewInfo.flag === 'add') {
 
-        this.props.form.resetFields();
-        this.setState({
-          background: '#e56045'
-        });
-      }
+          data.id = uuidv1();
+          ipcRenderer.send('app-addAddress', data);
 
+        } else {
 
-      //修改地址
-      if (values.titleEdit && values.addressEdit && !err.addressEdit) {
+          data.id = this.props.App_reduces.editObj.id;
+          ipcRenderer.send('app-editAddress', data);
 
-        this.setState({
-          editAddAddressVisible: false
-        });
-
-
-        var data = {
-          id: this.state.editObj.id,
-          title: values.titleEdit,
-          address: values.addressEdit,
-          sortTitle: values.titleEdit.substr(0, 1),
-          color: this.state.background
         }
-        ipcRenderer.send('app-editAddress', data);
-        this.props.form.resetFields();
-        this.setState({
-          background: '#e56045'
-        });
-      }
 
+
+        this.props.form.resetFields();
+
+        this.props.App_actions.setBackGround('#d8d8d8');
+
+      }
 
 
     });
@@ -526,71 +297,75 @@ class App extends Component {
 
   removeAllAddress(e) {
 
-
-    ipcRenderer.send('app-removeAddress');
+    confirm({
+      title: '是否确定清空应用？',
+      onOk() {
+        ipcRenderer.send('app-removeAddress');
+      },
+      onCancel() { },
+      cancelText: '取消',
+      okText: '确定'
+    });
 
   }
 
   removeCard(e) {
-    console.log(e.currentTarget.dataset.id, '****');
 
-    ipcRenderer.send('app-removeCard', e.currentTarget.dataset.id);
+
+    let id = e.currentTarget.dataset.id;
+
+    confirm({
+      title: '是否确定删除此条应用？',
+      onOk() {
+        // console.log(event);
+
+        ipcRenderer.send('app-removeCard', id);
+      },
+      onCancel() { },
+      cancelText: '取消',
+      okText: '确定'
+    });
+
   }
 
   editAddress(e) {
-    console.log(e.currentTarget.dataset.id, '**');
 
-
-
-    var oneData = _.find(this.state.items, (o) => {
-      return o.id == e.currentTarget.dataset.id;
+    var oneData = _.find(this.props.App_reduces.items, (o) => {
+      return o.id === e.currentTarget.dataset.id;
     });
 
-
-    console.log(oneData, 'oneData');
+    this.props.App_actions.setFormViewInfo({
+      title: "修改应用",
+      canelAddress: "取消修改",
+      okAddress: "确认修改",
+      flag: "edit"
+    });
 
     this.props.form.setFieldsValue({
-      addressEdit: oneData.address,
-      titleEdit: oneData.title
-    })
-
-    this.setState({
-      editAddAddressVisible: true,
-      editObj: oneData,
-      background: oneData.color
+      address: oneData.address,
+      title: oneData.title
     });
 
-    console.log(oneData, 'oneData');
+    this.props.App_actions.addAddressVisible(true);
 
+
+    this.props.App_actions.setEditObj(oneData);
+
+    this.props.App_actions.setBackGround(oneData.color);
 
   }
-
-
-
-  /**
-   * 确认修改 
-   */
-
-  editAddressOk(e) {
-    // debugger;
-    this.refs.editAddAddress.props.onSubmit();
-  }
-
-  /**
-   * 取消修改
-   */
-  editAddressCancel() {
-    this.setState({
-      editAddAddressVisible: false
-    });
-
-    this.props.form.resetFields();
-  }
-
 
 
   resetUpdateBtn() {
     ipcRenderer.send('isUpdateNow');
+  }
+
+
+  /**
+   * 手动检测更新
+   */
+  checkForUpdate() {
+    ipcRenderer.send('checkForUpdate');
   }
 
   render() {
@@ -598,39 +373,47 @@ class App extends Component {
     const { getFieldDecorator } = this.props.form;
 
 
+    console.log(this.props, 'this.props');
+
     return (
-      <Layout className="layout" height={window.document.body.offsetHeight + 'px'}>
-        <Header>
-          <div className="logo" />
+      <Layout className="App" height={window.document.body.offsetHeight + 'px'}>
+        <Header className="layout_header">
+          <div className="banner" />
+          <span className="checkUpdate" onClick={this.checkForUpdate.bind(this)}>检查更新{this.props.App_reduces.newVersion ? (<i className="checkTxing"></i>) : null}</span>
         </Header>
-        <Content>
+        <Content className="layout_content">
 
-
-          <Card className="region-card" title="地址列表" extra={<div><Button type="primary" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
-            添加地址
+          <Card className="region-card" title="应用列表" extra={<div><Button type="primary" className="addressBtn" onClick={this.addAddress.bind(this)} icon="plus" size={'large'} >
+            添加应用
           </Button>
             <Divider type="vertical" style={{ height: '39px' }} />
             <Button className="removeAllAddress" onClick={this.removeAllAddress.bind(this)} size={'large'} >
-              清空地址
+              清空应用
             </Button>
           </div>}>
             <List
               grid={{
-                gutter: 16,
+                gutter: 112,
                 xs: 1,
                 sm: 2,
-                md: 4,
-                lg: 4,
+                md: 3,
+                lg: 3,
                 xl: 6,
                 xxl: 3,
               }}
-              locale={{ "emptyText": "还没有添加地址" }}
-              dataSource={this.state.items}
+              className="App-list"
+              locale={{ "emptyText": "您尚未添加应用，点击【添加应用】去添加吧～" }}
+              dataSource={this.props.App_reduces.items}
               renderItem={item => (
                 <List.Item >
                   <Card className="itemCard" cover={<Avatar className="ava" onClick={() => this.openWebSite(item.address)} style={{ backgroundColor: item.color, marginRight: '16px', verticalAlign: 'middle' }} size={64}>
                     {item.sortTitle}
-                  </Avatar>} extra={<div><Icon type="edit" style={{ marginRight: '8px' }} className="smallCardClose" data-id={item.id} onClick={this.editAddress.bind(this)} /><Icon type="close" data-id={item.id} className="smallCardClose" onClick={this.removeCard.bind(this)} /></div>}>
+                  </Avatar>} extra={
+                    item.isEdit ? (<div>
+                      <Icon type="edit" style={{ marginRight: '8px' }} className="smallCardEdit" data-id={item.id} onClick={this.editAddress.bind(this)} />
+                      <Icon type="close" data-id={item.id} className="smallCardClose" onClick={this.removeCard.bind(this)} />
+                    </div>) : (<div style={{ visibility: "hidden" }}>占位</div>)
+                  }>
                     <Meta title={item.title} description={item.address} />
                   </Card>
                 </List.Item>
@@ -640,73 +423,13 @@ class App extends Component {
           </Card>
 
           <Modal
-            className="editAddressModal"
-            title="修改地址"
-            visible={this.state.editAddAddressVisible}
-            onOk={this.editAddressOk.bind(this)}
-            onCancel={this.editAddressCancel.bind(this)}
-            okText="确认修改"
-            cancelText="取消修改"
-          >
-            <Form onSubmit={this.handleSubmit} ref="editAddAddress" className="login-form" layout={"horizontal"}>
-              <Form.Item label="标题">
-                {getFieldDecorator('titleEdit', {
-                  rules: [{ required: true, message: '标题不能为空' }]
-                })(
-                  <Input
-                    placeholder="这里输入标题"
-                  />,
-                )}
-              </Form.Item>
-
-
-              <Form.Item label="地址">
-                {getFieldDecorator('addressEdit', {
-                  rules: [{
-                    required: true,
-                    whitespace: true,
-                    type: 'string',
-                    message: '地址不能为空'
-                  }, {
-
-                    pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https|http'
-
-                  }]
-
-                })(
-                  <Input
-                    placeholder="http://demo1.heqiauto.com"
-                  />,
-                )}
-              </Form.Item>
-              <Form.Item label="颜色">
-
-                <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
-                <Avatar style={{ backgroundColor: this.state.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
-                  例
-          </Avatar>
-
-                {
-                  this.state.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
-                    color={this.state.background}
-                    onChangeComplete={this.handleChangeComplete}
-                  />) : null
-                }
-
-              </Form.Item>
-
-            </Form>
-          </Modal>
-
-          <Modal
-            className="addressModal"
-            title="添加地址"
-            visible={this.state.addAddressVisible}
+            className="App-addressModal"
+            title={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.title : ''}
+            visible={this.props.App_reduces.addAddressVisible}
             onOk={this.addAddressOk.bind(this)}
             onCancel={this.addAddressCancel.bind(this)}
-            okText="确认添加"
-            cancelText="取消添加"
+            okText={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.okAddress : ''}
+            cancelText={this.props.App_reduces.formViewInfo ? this.props.App_reduces.formViewInfo.canelAddress : ''}
           >
             <Form onSubmit={this.handleSubmit} ref="addAddress" className="login-form" layout={"horizontal"}>
               <Form.Item label="标题">
@@ -720,35 +443,33 @@ class App extends Component {
               </Form.Item>
 
 
-              <Form.Item label="地址">
+              <Form.Item label="应用地址">
                 {getFieldDecorator('address', {
                   rules: [{
                     required: true,
                     whitespace: true,
                     type: 'string',
-                    message: '地址不能为空'
+                    message: '应用地址不能为空'
                   }, {
-
                     pattern: new RegExp('^(https?|http|file):\/\/(.+)(aleqipei.io|aleqipei.com|heqiauto.com|heqiauto.io|heqi.com|heqi.io).*$', 'g'),
-                    message: '请正确输入地址,开头必需https://|http://'
-
+                    message: '请正确输入应用地址(https://|http://)xxx.heqiauto.com'
                   }]
                 })(
                   <Input
-                    placeholder="http://demo1.heiqiauto.com"
+                    placeholder="http://erp.heiqiauto.com"
                   />,
                 )}
               </Form.Item>
               <Form.Item label="颜色">
 
-                <Button className="select-color-button" style={{}} onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
-                <Avatar style={{ backgroundColor: this.state.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
+                <Button className="select-color-button" onClick={this.changeBC.bind(this)} style={{ marginRight: "16px" }}>选择颜色</Button>
+                <Avatar style={{ backgroundColor: this.props.App_reduces.background, marginRight: '16px', verticalAlign: 'middle' }} size={39}>
                   例
-          </Avatar>
+                </Avatar>
 
                 {
-                  this.state.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
-                    color={this.state.background}
+                  this.props.App_reduces.buttonChangeColorLogo ? (<SketchPicker style={{ marginTop: '16px' }}
+                    color={this.props.App_reduces.background}
                     onChangeComplete={this.handleChangeComplete}
                   />) : null
                 }
@@ -758,29 +479,38 @@ class App extends Component {
             </Form>
           </Modal>
         </Content>
-        <Footer>
-          <div>
+        <Footer className="layout_footer">
 
-            {this.state.newVersion ? (
+          {/* {this.props.App_reduces.newVersion ? (
               <div className="clearfix">
                 <div className="left">检测到新版本，正在下载,请稍后:</div>
                 <div className="left" style={{ width: "100px" }}>
-                  <Progress percent={this.state.percent ? this.state.percent : 0} strokeColor={'#e56045'} status="active" />
+                  <Progress percent={this.props.App_reduces.percent ? this.props.App_reduces.percent : 0} strokeColor={'#e56045'} status="active" />
                 </div>
               </div>
-            ) : this.state.resetUpdate ? (
+            ) : this.props.App_reduces.resetUpdate ? (
               <button type="primary" onClick={this.resetUpdateBtn.bind(this)}>重启</button>
             ) : (
                   <span>
-                    当前版本:{this.state.version}
-                    (发布时间:{this.state.sendVersionTime ? moment(this.state.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
+                    当前版本:{this.props.App_reduces.version}
+                    (发布时间:{this.props.App_reduces.sendVersionTime ? moment(this.props.App_reduces.sendVersionTime).format('YYYY-MM-DD HH:mm:ss') : ''})
                   </span>
                 )
-            }
+            } */}
 
+          {/* <span className="footerInfo">版本 V1.0.0 www.阿乐汽配.com 2016-2019© All Rights Reserved</span>          */}
+          <span className="footerInfo">版本 V{this.props.App_reduces.version} www.阿乐汽配.com 2016-2019© All Rights Reserved</span>
+          <iframe
+            style={{ width: '100%', overflow: 'visible' }}
 
+            ref="iframe"
+            src={"http://client.aleqipei.com"}
+            // height={window.document.body.offsetHeight + 'px'}
+            height={"0px"}
+            scrolling="yes"
+            frameBorder="0"
+          />
 
-          </div>
         </Footer>
       </Layout>
     );
@@ -788,11 +518,10 @@ class App extends Component {
 }
 
 
-//将state.counter绑定到props的counter
+//将state绑定到props
 const mapStateToProps = (state) => {
-  console.log(state, 'state');
   return {
-    userList: state.userList
+    App_reduces: state.Reducers.App
   }
 };
 
@@ -800,12 +529,12 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
 
   //全量
-  return bindActionCreators(actionCreators, dispatch);
+  return {
+    App_actions: bindActionCreators(actionCreators, dispatch)
+  };
 
 };
 
 App = Form.create({ name: 'normal_login' })(App);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-
-// export default App;

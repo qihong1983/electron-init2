@@ -1,22 +1,24 @@
 {
-  "name": "heqi",
-  "version": "1.0.117",
+  "name": "heqi2",
+  "version": "1.0.193",
   "private": true,
   "dependencies": {
     "asar": "~0.14.5",
+    "auto-launch": "~5.0.5",
     "concurrently": "~4.0.1",
     "electron-is-dev": "~1.0.1",
     "electron-log": "~3.0.6",
     "electron-updater": "4.0.0",
     "fsevents": "~2.0.7",
     "jimp": "~0.6.4",
-    "qrcode-decoder": "~0.1.1",
-    "qrcode-reader": "~1.0.4",
     "lodash": "~4.17.11",
     "nedb": "~1.8.0",
+    "qrcode-decoder": "~0.1.1",
+    "qrcode-reader": "~1.0.4",
     "react-color": "~2.17.3",
     "react-router": "~3.0.0",
     "react-router-redux": "~4.0.8",
+    "socket.io": "~2.2.0",
     "taffy": "~2.6.2",
     "uuid": "~3.3.2",
     "wait-on": "~3.1.0"
@@ -73,7 +75,8 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://heqiset.heqiauto.com"
+        "url": "http://heqiset.heqiauto.com",
+        "useMultipleRangeRequest": false
       }
     ],
     "win": {

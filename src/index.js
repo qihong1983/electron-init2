@@ -37,7 +37,7 @@ import {
 
 
 import {
-	list
+	Reducers
 } from './reducers/data';
 
 import 'antd/dist/antd.css';
@@ -50,10 +50,9 @@ const thunk = require('redux-thunk').default;
 // } from './reducers/data';
 
 
-
 const reducer = combineReducers({
 	// profileList,
-	list,
+	Reducers,
 	routing: routerReducer
 });
 
