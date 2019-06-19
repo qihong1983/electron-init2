@@ -92,7 +92,7 @@ function createWindow() {
   // console.log(Notification.isSupported(), '是否支持桌面');
 
   mainWindow.flashFrame(true);
-  mainWindow.setSkipTaskbar(true);
+  mainWindow.setSkipTaskbar(false);
 
   // var notification = new Notification({
   //   title: "标题",
@@ -294,7 +294,7 @@ function createWindow() {
 
 
 
-  tray = new Tray(path.join(__dirname, 'tray.png'));
+  tray = new Tray(path.join(__dirname, '32x32.png'));
 
   console.log(tray, 'traytraytraytray');
   const contextMenu = Menu.buildFromTemplate([
@@ -302,6 +302,7 @@ function createWindow() {
       label: '打开', click: function () {
         // app.quit();
         // mainWindow.destroy();
+        mainWindow.setSkipTaskbar(false);
         mainWindow.show();
       },
     }, {
@@ -312,9 +313,7 @@ function createWindow() {
         app.quit();
         // mainWindow.destroy();
       },
-      accelerator: "Command+Q",
       selector: "terminate:"
-
     }
   ]);
   mainWindow.on('show', () => {
@@ -323,7 +322,7 @@ function createWindow() {
   mainWindow.on('hide', () => {
     tray.setHighlightMode('never')
   })
-  tray.setToolTip('This is my application.');
+  tray.setToolTip('阿乐汽配客户端');
   tray.setContextMenu(contextMenu);
 
   tray.on('double-click', (event) => {
