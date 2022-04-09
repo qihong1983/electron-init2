@@ -58,7 +58,7 @@
     "electron-squirrel-startup": "~1.0.0",
     "electron-winstaller": "~2.7.0",
     "loadash": "~1.0.0",
-    "moment": "~2.22.2",
+    "moment": "~2.29.2",
     "react": "~15.6.1",
     "react-dom": "~15.5.3",
     "react-electron-web-view": "~2.0.1",
